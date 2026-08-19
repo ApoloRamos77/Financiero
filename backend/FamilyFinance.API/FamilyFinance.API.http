@@ -1,0 +1,6 @@
+@FamilyFinance.API_HostAddress = http://localhost:5125
+
+GET {{FamilyFinance.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,18 @@
+2026-08-18 13:47:29.785 -05:00 [WRN] The 'CategoryType' property 'Type' on entity type 'Category' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value 'Income', since this is the CLR default for the 'CategoryType' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-08-18 13:47:29.818 -05:00 [WRN] The 'FrequencyType' property 'Frequency' on entity type 'Contributor' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value 'Daily', since this is the CLR default for the 'FrequencyType' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-08-18 13:47:29.820 -05:00 [WRN] The 'GoalType' property 'GoalType' on entity type 'Goal' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value 'EmergencyFund', since this is the CLR default for the 'GoalType' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-08-18 13:47:29.823 -05:00 [WRN] The 'UserRole' property 'Role' on entity type 'User' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value 'Admin', since this is the CLR default for the 'UserRole' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information.
+2026-08-18 13:47:30.682 -05:00 [ERR] Failed executing DbCommand (105ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM ff.__ef_migrations
+ORDER BY "MigrationId";
+2026-08-18 13:47:31.724 -05:00 [INF] Database migration completed successfully.
+2026-08-18 13:47:33.421 -05:00 [INF] HTTP GET /swagger responded 301 in 4.7262 ms
+2026-08-18 13:47:33.500 -05:00 [INF] HTTP GET /swagger/index.html responded 200 in 56.1514 ms
+2026-08-18 13:47:33.575 -05:00 [INF] HTTP GET /swagger/index.js responded 200 in 3.0184 ms
+2026-08-18 13:47:33.587 -05:00 [INF] HTTP GET /swagger/index.css responded 200 in 50.5117 ms
+2026-08-18 13:47:33.634 -05:00 [INF] HTTP GET /swagger/swagger-ui-standalone-preset.js responded 200 in 62.0023 ms
+2026-08-18 13:47:33.634 -05:00 [INF] HTTP GET /swagger/swagger-ui.css responded 200 in 133.9752 ms
+2026-08-18 13:47:33.653 -05:00 [INF] HTTP GET /swagger/swagger-ui-bundle.js responded 200 in 116.4122 ms
+2026-08-18 13:47:33.804 -05:00 [INF] HTTP GET /swagger/favicon-32x32.png responded 200 in 0.1916 ms
+2026-08-18 13:47:33.811 -05:00 [INF] HTTP GET /swagger/v1/swagger.json responded 200 in 17.1975 ms
