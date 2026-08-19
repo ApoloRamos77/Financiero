@@ -1,0 +1,12 @@
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\bin\Release\net10.0\FamilyFinance.Domain.deps.json
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\bin\Release\net10.0\FamilyFinance.Domain.dll
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\bin\Release\net10.0\FamilyFinance.Domain.pdb
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.AssemblyInfoInputs.cache
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.AssemblyInfo.cs
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.csproj.CoreCompileInputs.cache
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.sourcelink.json
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.dll
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\refint\FamilyFinance.Domain.dll
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\FamilyFinance.Domain.pdb
+C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.Domain\obj\Release\net10.0\ref\FamilyFinance.Domain.dll

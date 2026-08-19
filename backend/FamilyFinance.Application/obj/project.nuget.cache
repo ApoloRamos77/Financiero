@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/mz3ZRRLVQw=",
+  "dgSpecHash": "62AKR4TRh/E=",
   "success": true,
-  "projectFilePath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
+  "projectFilePath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\aramos\\.nuget\\packages\\automapper\\16.2.0\\automapper.16.2.0.nupkg.sha512",
     "C:\\Users\\aramos\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",

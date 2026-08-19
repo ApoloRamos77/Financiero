@@ -718,11 +718,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
+      "projectUniqueName": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
       "projectName": "FamilyFinance.Application",
-      "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
+      "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj",
       "packagesPath": "C:\\Users\\aramos\\.nuget\\packages\\",
-      "outputPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\obj\\",
+      "outputPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -745,8 +745,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {
-              "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj"
+            "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {
+              "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj"
             }
           }
         }

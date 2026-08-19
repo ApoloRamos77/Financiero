@@ -1548,11 +1548,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.API\\FamilyFinance.API.csproj",
+      "projectUniqueName": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.API\\FamilyFinance.API.csproj",
       "projectName": "FamilyFinance.API",
-      "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.API\\FamilyFinance.API.csproj",
+      "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.API\\FamilyFinance.API.csproj",
       "packagesPath": "C:\\Users\\aramos\\.nuget\\packages\\",
-      "outputPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.API\\obj\\",
+      "outputPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1575,11 +1575,11 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj": {
-              "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj"
+            "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj": {
+              "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Application\\FamilyFinance.Application.csproj"
             },
-            "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Infrastructure\\FamilyFinance.Infrastructure.csproj": {
-              "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Infrastructure\\FamilyFinance.Infrastructure.csproj"
+            "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Infrastructure\\FamilyFinance.Infrastructure.csproj": {
+              "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Infrastructure\\FamilyFinance.Infrastructure.csproj"
             }
           }
         }

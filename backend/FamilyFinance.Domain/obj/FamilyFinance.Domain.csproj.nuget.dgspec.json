@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {}
+    "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {
+    "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj",
+        "projectUniqueName": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj",
         "projectName": "FamilyFinance.Domain",
-        "projectPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj",
+        "projectPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\FamilyFinance.Domain.csproj",
         "packagesPath": "C:\\Users\\aramos\\.nuget\\packages\\",
-        "outputPath": "C:\\Pruebas\\Tempo\\backend\\FamilyFinance.Domain\\obj\\",
+        "outputPath": "C:\\Pruebas\\Desarrollo\\Finanza\\backend\\FamilyFinance.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
