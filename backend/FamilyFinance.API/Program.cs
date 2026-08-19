@@ -95,7 +95,11 @@ app.UseSerilogRequestLogging();
 
 // Habilitado en todos los entornos para que Easypanel pueda mostrar Swagger
 app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyFinance API v1"));
+app.UseSwaggerUI(c => 
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FamilyFinance API v1");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseCors("MobileApp");
 app.UseAuthentication();
