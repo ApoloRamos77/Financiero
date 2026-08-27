@@ -141,6 +141,23 @@ using (var scope = app.Services.CreateScope())
     {
         db.Database.Migrate();
         Log.Information("Database migration completed successfully.");
+        
+        // Convert Enums to Varchar safely
+        db.Database.ExecuteSqlRaw(@"
+            DO $$ BEGIN ALTER TABLE ff.categories ALTER COLUMN type TYPE varchar(50) USING type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.users ALTER COLUMN role TYPE varchar(50) USING role::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.contributors ALTER COLUMN contributor_type TYPE varchar(50) USING contributor_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.contributors ALTER COLUMN frequency TYPE varchar(50) USING frequency::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.ventures ALTER COLUMN status TYPE varchar(50) USING status::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.accounts ALTER COLUMN account_type TYPE varchar(50) USING account_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.movements ALTER COLUMN type TYPE varchar(50) USING type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.movements ALTER COLUMN payment_method TYPE varchar(50) USING payment_method::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.goals ALTER COLUMN goal_type TYPE varchar(50) USING goal_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.alerts ALTER COLUMN alert_type TYPE varchar(50) USING alert_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.alerts ALTER COLUMN status TYPE varchar(50) USING status::text; EXCEPTION WHEN OTHERS THEN END; $$;
+            DO $$ BEGIN ALTER TABLE ff.alert_configs ALTER COLUMN alert_type TYPE varchar(50) USING alert_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
+        ");
+        Log.Information("Enum conversion script executed successfully.");
     }
     catch (Exception ex)
     {
