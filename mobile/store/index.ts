@@ -7,8 +7,10 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
+  isOnboardingComplete: boolean;
   isLoading: boolean;
   setAuth: (user: User, accessToken: string, refreshToken: string) => Promise<void>;
+  setOnboardingComplete: () => Promise<void>;
   clearAuth: () => Promise<void>;
   initAuth: () => Promise<void>;
 }
@@ -17,20 +19,28 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   accessToken: null,
   isAuthenticated: false,
+  isOnboardingComplete: false,
   isLoading: true,
 
   setAuth: async (user, accessToken, refreshToken) => {
     await SecureStore.setItemAsync('accessToken', accessToken);
     await SecureStore.setItemAsync('refreshToken', refreshToken);
     await SecureStore.setItemAsync('user', JSON.stringify(user));
-    set({ user, accessToken, isAuthenticated: true, isLoading: false });
+    // New registrations start with onboarding pending
+    set({ user, accessToken, isAuthenticated: true, isOnboardingComplete: false, isLoading: false });
+  },
+
+  setOnboardingComplete: async () => {
+    await SecureStore.setItemAsync('onboardingComplete', 'true');
+    set({ isOnboardingComplete: true });
   },
 
   clearAuth: async () => {
     await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('refreshToken');
     await SecureStore.deleteItemAsync('user');
-    set({ user: null, accessToken: null, isAuthenticated: false, isLoading: false });
+    await SecureStore.deleteItemAsync('onboardingComplete');
+    set({ user: null, accessToken: null, isAuthenticated: false, isOnboardingComplete: false, isLoading: false });
   },
 
   initAuth: async () => {
@@ -39,7 +49,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       const userStr = await SecureStore.getItemAsync('user');
       if (token && userStr) {
         const user = JSON.parse(userStr);
-        set({ user, accessToken: token, isAuthenticated: true, isLoading: false });
+        const onboardingDone = await SecureStore.getItemAsync('onboardingComplete');
+        set({
+          user,
+          accessToken: token,
+          isAuthenticated: true,
+          isOnboardingComplete: onboardingDone === 'true',
+          isLoading: false,
+        });
       } else {
         set({ isLoading: false });
       }

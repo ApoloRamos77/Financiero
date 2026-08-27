@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FamilyFinance.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6792c9190f9dfc6c9110d0347accc143f12bdae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+852224aadaa51ac9169588a0bf22f11ab4cb8556")]
 [assembly: System.Reflection.AssemblyProductAttribute("FamilyFinance.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FamilyFinance.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

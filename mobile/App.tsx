@@ -11,6 +11,7 @@ import { Colors } from './constants/theme';
 // Screens
 import LoginScreen from './screens/auth/LoginScreen';
 import SetupScreen from './screens/auth/SetupScreen';
+import OnboardingScreen from './screens/auth/OnboardingScreen';
 import MainNavigator from './navigation/MainNavigator';
 import IncomeScreen from './screens/movements/IncomeScreen';
 import ExpenseScreen from './screens/movements/ExpenseScreen';
@@ -22,6 +23,7 @@ import GoalDetailScreen from './screens/goals/GoalDetailScreen';
 export type RootStackParamList = {
   Login: undefined;
   Setup: undefined;
+  Onboarding: undefined;
   Main: undefined;
   Income: { movementId?: string };
   Expense: { movementId?: string };
@@ -43,7 +45,7 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
-  const { isAuthenticated, isLoading, initAuth } = useAuthStore();
+  const { isAuthenticated, isOnboardingComplete, isLoading, initAuth } = useAuthStore();
 
   useEffect(() => {
     initAuth();
@@ -83,11 +85,16 @@ export default function App() {
               }}
             >
               {!isAuthenticated ? (
+                // ── Estado 1: No autenticado ──────────────────
                 <>
                   <Stack.Screen name="Login" component={LoginScreen} />
                   <Stack.Screen name="Setup" component={SetupScreen} />
                 </>
+              ) : !isOnboardingComplete ? (
+                // ── Estado 2: Autenticado, onboarding pendiente
+                <Stack.Screen name="Onboarding" component={OnboardingScreen} />
               ) : (
+                // ── Estado 3: Listo, ir a la app principal ────
                 <>
                   <Stack.Screen name="Main" component={MainNavigator} />
                   <Stack.Screen
@@ -113,3 +120,4 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+

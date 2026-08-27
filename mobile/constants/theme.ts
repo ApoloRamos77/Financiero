@@ -200,4 +200,4 @@ export const VENTURE_STATUS = [
   { value: 'Suspended', label: 'Suspendido' },
 ];
 
-export const API_URL = 'http://localhost:5000/api';
+export const API_URL = 'https://softsport77-apifinanza.scuiaw.easypanel.host/api';

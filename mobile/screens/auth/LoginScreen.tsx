@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ScrollView, Alert, KeyboardAvoidingView, Platform, ActivityIndicator
+  ScrollView, Alert, KeyboardAvoidingView, Platform, ActivityIndicator, Image
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -46,10 +46,8 @@ export default function LoginScreen() {
       >
         {/* Logo & Header */}
         <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoEmoji}>💰</Text>
-          </View>
-          <Text style={styles.appName}>FamilyFinance</Text>
+          <Image source={require('../../assets/logo.png')} style={styles.logoImage} resizeMode="contain" />
+          <Text style={styles.appName}>HELPERFIN</Text>
           <Text style={styles.appTagline}>Gestión financiera familiar inteligente</Text>
         </View>
 
@@ -108,13 +106,9 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: Spacing.xl },
 
   header: { alignItems: 'center', marginBottom: Spacing['3xl'] },
-  logoContainer: {
-    width: 80, height: 80, borderRadius: 24,
-    backgroundColor: Colors.primary + '20',
-    alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.base,
-    borderWidth: 1, borderColor: Colors.primary + '40',
+  logoImage: {
+    width: 120, height: 120, marginBottom: Spacing.base,
   },
-  logoEmoji: { fontSize: 40 },
   appName: { fontSize: Typography.sizes['4xl'], color: Colors.text, fontWeight: Typography.weights.extrabold },
   appTagline: { fontSize: Typography.sizes.sm, color: Colors.textSecondary, marginTop: 6, textAlign: 'center' },
 
