@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FamilyFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+852224aadaa51ac9169588a0bf22f11ab4cb8556")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c89f9042fe53e41d5f2ab9b46df4f3770f6982d8")]
 [assembly: System.Reflection.AssemblyProductAttribute("FamilyFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FamilyFinance.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

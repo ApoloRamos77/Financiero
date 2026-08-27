@@ -93,6 +93,21 @@ var app = builder.Build();
 // ─── Middleware ───────────────────────────────────────────────
 app.UseSerilogRequestLogging();
 
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Unhandled exception");
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new { message = ex.Message, detail = ex.ToString() });
+    }
+});
+
 // Habilitado en todos los entornos para que Easypanel pueda mostrar Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c => 
@@ -104,6 +119,18 @@ app.UseSwaggerUI(c =>
 app.UseCors("MobileApp");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/api/health", async (FamilyFinance.Infrastructure.Data.AppDbContext db) => 
+{ 
+    try {
+        var canConnect = await db.Database.CanConnectAsync();
+        return canConnect ? Results.Ok(new { status = "OK", db = "Connected" }) : Results.Problem("Cannot connect to database");
+    }
+    catch (Exception ex) {
+        return Results.Problem($"Database connection failed: {ex.Message}");
+    }
+});
+
 app.MapControllers();
 
 // ─── Auto-migrate on startup ──────────────────────────────────
