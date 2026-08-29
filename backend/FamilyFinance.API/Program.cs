@@ -60,6 +60,8 @@ builder.Services.AddControllers()
     {
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        opt.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+        opt.JsonSerializerOptions.Converters.Add(new NullableDateOnlyJsonConverter());
     });
 
 // ─── Swagger ─────────────────────────────────────────────────

@@ -460,3 +460,147 @@ const styles = StyleSheet.create({
   // Divider
   divider: { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.sm },
 });
+
+// ─── DatePickerField ──────────────────────────────────────────
+import { Modal, Platform } from 'react-native';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+
+// Configurar localización en español
+LocaleConfig.locales['es'] = {
+  monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+  monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+  dayNames: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+  dayNamesShort: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
+  today: 'Hoy',
+};
+LocaleConfig.defaultLocale = 'es';
+
+interface DatePickerFieldProps {
+  label: string;
+  value: string;              // Formato "YYYY-MM-DD"
+  onChange: (date: string) => void;
+  accentColor?: string;
+}
+
+export function DatePickerField({ label, value, onChange, accentColor }: DatePickerFieldProps) {
+  const [showPicker, setShowPicker] = React.useState(false);
+  const color = accentColor || Colors.primary;
+
+  // Formatea la fecha para mostrarla de forma amigable
+  const formatDisplay = (dateStr: string): string => {
+    if (!dateStr) return 'Seleccionar fecha';
+    try {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      return `${d} ${months[m - 1]} ${y}`;
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const markedDates = value
+    ? { [value]: { selected: true, selectedColor: color } }
+    : {};
+
+  return (
+    <View style={dpStyles.container}>
+      <Text style={dpStyles.label}>{label}</Text>
+      <TouchableOpacity
+        style={[dpStyles.field, { borderColor: showPicker ? color : Colors.border }]}
+        onPress={() => setShowPicker(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={dpStyles.calIcon}>📅</Text>
+        <Text style={[dpStyles.dateText, !value && dpStyles.placeholder]}>
+          {formatDisplay(value)}
+        </Text>
+        <Text style={[dpStyles.chevron, { color }]}>›</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={showPicker}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPicker(false)}
+      >
+        <View style={dpStyles.overlay}>
+          <View style={dpStyles.modalCard}>
+            <View style={dpStyles.modalHeader}>
+              <Text style={dpStyles.modalTitle}>📅 Seleccionar Fecha</Text>
+              <TouchableOpacity onPress={() => setShowPicker(false)} style={dpStyles.modalCloseBtn}>
+                <Text style={dpStyles.modalCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Calendar
+              current={value || new Date().toISOString().split('T')[0]}
+              onDayPress={(day: { dateString: string }) => {
+                onChange(day.dateString);
+                setShowPicker(false);
+              }}
+              markedDates={markedDates}
+              maxDate={new Date().toISOString().split('T')[0]}
+              theme={{
+                backgroundColor: Colors.surface,
+                calendarBackground: Colors.surface,
+                textSectionTitleColor: Colors.textSecondary,
+                selectedDayBackgroundColor: color,
+                selectedDayTextColor: '#ffffff',
+                todayTextColor: color,
+                dayTextColor: Colors.text,
+                textDisabledColor: Colors.textMuted,
+                arrowColor: color,
+                monthTextColor: Colors.text,
+                textMonthFontWeight: 'bold',
+                textDayFontSize: 14,
+                textMonthFontSize: 16,
+                textDayHeaderFontSize: 12,
+              }}
+            />
+
+            <TouchableOpacity
+              style={[dpStyles.todayBtn, { backgroundColor: color }]}
+              onPress={() => {
+                const today = new Date().toISOString().split('T')[0];
+                onChange(today);
+                setShowPicker(false);
+              }}
+            >
+              <Text style={dpStyles.todayBtnText}>Hoy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const dpStyles = StyleSheet.create({
+  container: { marginBottom: Spacing.base },
+  label: { fontSize: Typography.sizes.sm, color: Colors.textSecondary, fontWeight: Typography.weights.medium, marginBottom: 6 },
+  field: {
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.base,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  calIcon: { fontSize: 18, marginRight: 8 },
+  dateText: { flex: 1, fontSize: Typography.sizes.base, color: Colors.text },
+  placeholder: { color: Colors.textMuted },
+  chevron: { fontSize: 22, fontWeight: 'bold' },
+
+  // Modal
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: Spacing.base },
+  modalCard: { backgroundColor: Colors.surface, borderRadius: BorderRadius.xl, width: '100%', maxWidth: 380, overflow: 'hidden', ...Shadows.lg },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.base, paddingVertical: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border },
+  modalTitle: { fontSize: Typography.sizes.md, color: Colors.text, fontWeight: Typography.weights.bold },
+  modalCloseBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.surfaceHigh, alignItems: 'center', justifyContent: 'center' },
+  modalCloseText: { color: Colors.textSecondary, fontSize: 14 },
+  todayBtn: { margin: Spacing.base, borderRadius: BorderRadius.lg, paddingVertical: 12, alignItems: 'center' },
+  todayBtnText: { color: '#fff', fontWeight: Typography.weights.bold, fontSize: Typography.sizes.base },
+});
+

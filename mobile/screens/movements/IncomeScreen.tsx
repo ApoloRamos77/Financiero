@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity,
-  Alert, KeyboardAvoidingView, Platform, Modal
+  Alert, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -9,7 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
 import { movementService, contributorService, categoryService, accountService } from '../../services/api';
 import { useAppStore, flatCategories } from '../../store';
-import { Button, ScreenHeader } from '../../components/ui';
+import { Button, ScreenHeader, DatePickerField } from '../../components/ui';
 import { PAYMENT_METHODS } from '../../constants/theme';
 import { todayString } from '../../utils/helpers';
 
@@ -135,16 +135,12 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
           </View>
 
           {/* Date */}
-          <View style={styles.field}>
-            <Text style={styles.label}>Fecha *</Text>
-            <TextInput
-              style={styles.input}
-              value={date}
-              onChangeText={setDate}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={Colors.textMuted}
-            />
-          </View>
+          <DatePickerField
+            label="Fecha *"
+            value={date}
+            onChange={setDate}
+            accentColor={accentColor}
+          />
 
           {/* Contributor */}
           {(contributors?.length ?? 0) > 0 && (

@@ -17,7 +17,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
 import { movementService, contributorService, categoryService, accountService } from '../../services/api';
 import { useAppStore, flatCategories } from '../../store';
-import { Button } from '../../components/ui';
+import { Button, DatePickerField } from '../../components/ui';
 import { PAYMENT_METHODS } from '../../constants/theme';
 import { todayString } from '../../utils/helpers';
 
@@ -108,10 +108,12 @@ export default function ExpenseScreen() {
             <Text style={styles.label}>Descripción *</Text>
             <TextInput style={styles.input} value={concept} onChangeText={setConcept} placeholder="Ej: Compras supermercado" placeholderTextColor={Colors.textMuted} />
           </View>
-          <View style={styles.field}>
-            <Text style={styles.label}>Fecha *</Text>
-            <TextInput style={styles.input} value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" placeholderTextColor={Colors.textMuted} />
-          </View>
+          <DatePickerField
+            label="Fecha *"
+            value={date}
+            onChange={setDate}
+            accentColor={accentColor}
+          />
 
           {(contributors?.length ?? 0) > 0 && (
             <View style={styles.field}>
