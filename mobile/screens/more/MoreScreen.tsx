@@ -219,7 +219,7 @@ export default function MoreScreen() {
                 <View>
                   <Text style={styles.profileName}>{user?.name}</Text>
                   <Text style={styles.profileEmail}>{user?.email}</Text>
-                  <Text style={styles.profileRole}>{user?.role === 'Admin' ? '👑 Administrador' : user?.role}</Text>
+                  <Text style={styles.profileRole}>{user?.familyName ? `${user.familyName} · ` : ''}{user?.role === 'Admin' ? '👑 Administrador' : user?.role}</Text>
                 </View>
               </View>
 
@@ -267,7 +267,7 @@ export default function MoreScreen() {
         </View>
         <View>
           <Text style={styles.homeUserName}>{user?.name}</Text>
-          <Text style={styles.homeUserRole}>{user?.role === 'Admin' ? '👑 Admin' : user?.role}</Text>
+          <Text style={styles.homeUserRole}>{user?.familyName ? `${user.familyName} · ` : ''}{user?.role === 'Admin' ? '👑 Admin' : user?.role}</Text>
         </View>
       </View>
 
@@ -282,6 +282,10 @@ export default function MoreScreen() {
             <Text style={styles.menuItemArrow}>›</Text>
           </TouchableOpacity>
         ))}
+
+        <View style={{ padding: Spacing.base, marginTop: Spacing.lg }}>
+          <Button title="Cerrar sesión" onPress={handleLogout} variant="danger" />
+        </View>
       </ScrollView>
     </View>
   );

@@ -132,12 +132,19 @@ public class AuthService : IAuthService
         var (accessToken, expiresAt) = GenerateAccessToken(user);
         var refreshToken = await GenerateRefreshTokenAsync(user.Id, ct);
 
+        var familyName = user.Family?.Name;
+        if (familyName == null)
+        {
+            var family = await _familyRepo.GetByIdAsync(user.FamilyId, ct);
+            familyName = family?.Name;
+        }
+
         return new AuthResponseDto(
             AccessToken: accessToken,
             RefreshToken: refreshToken,
             ExpiresAt: expiresAt,
             User: new UserDto(user.Id, user.FamilyId, user.Name, user.Email,
-                              user.Role.ToString(), user.IsActive, user.AvatarColor, user.LastLogin));
+                              user.Role.ToString(), user.IsActive, user.AvatarColor, user.LastLogin, familyName));
     }
 
     private (string Token, DateTime ExpiresAt) GenerateAccessToken(User user)

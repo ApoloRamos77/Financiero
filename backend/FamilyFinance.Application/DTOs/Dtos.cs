@@ -39,7 +39,8 @@ public record UserDto(
     string Role,
     bool IsActive,
     string AvatarColor,
-    DateTime? LastLogin);
+    DateTime? LastLogin,
+    string? FamilyName = null);
 
 public record CreateUserDto(string Name, string Email, string Password, string Role, string? AvatarColor);
 public record UpdateUserDto(string Name, string? Email, string? Password, string Role, bool IsActive, string? AvatarColor);

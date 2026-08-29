@@ -18,7 +18,8 @@ import { Spacing, Typography, BorderRadius, Shadows } from '../../constants/them
 import { movementService, contributorService, categoryService, accountService } from '../../services/api';
 import { useAppStore, flatCategories } from '../../store';
 import { Button } from '../../components/ui';
-import { todayString, PAYMENT_METHODS } from '../../constants/theme';
+import { PAYMENT_METHODS } from '../../constants/theme';
+import { todayString } from '../../utils/helpers';
 
 export default function ExpenseScreen() {
   const insets = useSafeAreaInsets();
@@ -43,7 +44,7 @@ export default function ExpenseScreen() {
   const { data: accounts } = useQuery({ queryKey: ['accounts'], queryFn: accountService.getAll });
   const { ventures } = useAppStore();
 
-  const categories = rawCategories ? flatCategories(rawCategories).filter((c: any) =>
+  const categories = Array.isArray(rawCategories) ? flatCategories(rawCategories).filter((c: any) =>
     c.type === 'Expense' || c.type === 'Both'
   ) : [];
 
@@ -119,7 +120,7 @@ export default function ExpenseScreen() {
                 <TouchableOpacity style={[styles.chip, !selectedContributor && styles.chipSelected]} onPress={() => setSelectedContributor('')}>
                   <Text style={[styles.chipText, !selectedContributor && styles.chipTextSelected]}>Ninguno</Text>
                 </TouchableOpacity>
-                {contributors?.map((c: any) => (
+                {Array.isArray(contributors) && contributors.map((c: any) => (
                   <TouchableOpacity key={c.id} style={[styles.chip, selectedContributor === c.id && styles.chipSelected]} onPress={() => setSelectedContributor(c.id)} activeOpacity={0.7}>
                     <Text style={[styles.chipText, selectedContributor === c.id && styles.chipTextSelected]}>{c.name}</Text>
                   </TouchableOpacity>
@@ -148,7 +149,7 @@ export default function ExpenseScreen() {
                 <TouchableOpacity style={[styles.chip, !selectedVenture && styles.chipSelected]} onPress={() => setSelectedVenture('')}>
                   <Text style={[styles.chipText, !selectedVenture && styles.chipTextSelected]}>Ninguno</Text>
                 </TouchableOpacity>
-                {ventures.filter((v: any) => v.status === 'Active').map((v: any) => (
+                {Array.isArray(ventures) && ventures.filter((v: any) => v.status === 'Active').map((v: any) => (
                   <TouchableOpacity key={v.id} style={[styles.chip, selectedVenture === v.id && styles.chipSelected]} onPress={() => setSelectedVenture(v.id)} activeOpacity={0.7}>
                     <Text style={[styles.chipText, selectedVenture === v.id && styles.chipTextSelected]}>{v.icon} {v.name}</Text>
                   </TouchableOpacity>
@@ -164,7 +165,7 @@ export default function ExpenseScreen() {
                 <TouchableOpacity style={[styles.chip, !selectedAccount && styles.chipSelected]} onPress={() => setSelectedAccount('')}>
                   <Text style={[styles.chipText, !selectedAccount && styles.chipTextSelected]}>Sin cuenta</Text>
                 </TouchableOpacity>
-                {accounts?.filter((a: any) => a.isActive).map((a: any) => (
+                {Array.isArray(accounts) && accounts.filter((a: any) => a.isActive).map((a: any) => (
                   <TouchableOpacity key={a.id} style={[styles.chip, selectedAccount === a.id && styles.chipSelected]} onPress={() => setSelectedAccount(a.id)} activeOpacity={0.7}>
                     <Text style={[styles.chipText, selectedAccount === a.id && styles.chipTextSelected]}>{a.name}</Text>
                   </TouchableOpacity>

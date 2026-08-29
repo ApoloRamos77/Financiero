@@ -20,6 +20,7 @@ export interface User {
   isActive: boolean;
   avatarColor: string;
   lastLogin?: string;
+  familyName?: string;
 }
 
 export interface AuthResponse {

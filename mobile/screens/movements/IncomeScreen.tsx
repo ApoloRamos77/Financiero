@@ -10,7 +10,8 @@ import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../consta
 import { movementService, contributorService, categoryService, accountService } from '../../services/api';
 import { useAppStore, flatCategories } from '../../store';
 import { Button, ScreenHeader } from '../../components/ui';
-import { todayString, PAYMENT_METHODS } from '../../constants/theme';
+import { PAYMENT_METHODS } from '../../constants/theme';
+import { todayString } from '../../utils/helpers';
 
 type RouteParams = { movementId?: string };
 
@@ -40,7 +41,7 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
   const { data: accounts } = useQuery({ queryKey: ['accounts'], queryFn: accountService.getAll });
   const { ventures } = useAppStore();
 
-  const categories = rawCategories ? flatCategories(rawCategories).filter((c: any) =>
+  const categories = Array.isArray(rawCategories) ? flatCategories(rawCategories).filter((c: any) =>
     c.type === type || c.type === 'Both'
   ) : [];
 
@@ -156,7 +157,7 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
                 >
                   <Text style={[styles.chipText, !selectedContributor && styles.chipTextSelected]}>Ninguno</Text>
                 </TouchableOpacity>
-                {contributors.map((c: any) => (
+                {Array.isArray(contributors) && contributors.map((c: any) => (
                   <TouchableOpacity
                     key={c.id}
                     style={[styles.chip, selectedContributor === c.id && styles.chipSelected]}
@@ -204,7 +205,7 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
                 >
                   <Text style={[styles.chipText, !selectedVenture && styles.chipTextSelected]}>Ninguno</Text>
                 </TouchableOpacity>
-                {ventures.filter((v: any) => v.status === 'Active').map((v: any) => (
+                {Array.isArray(ventures) && ventures.filter((v: any) => v.status === 'Active').map((v: any) => (
                   <TouchableOpacity
                     key={v.id}
                     style={[styles.chip, selectedVenture === v.id && styles.chipSelected]}
@@ -231,7 +232,7 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
                 >
                   <Text style={[styles.chipText, !selectedAccount && styles.chipTextSelected]}>Sin cuenta</Text>
                 </TouchableOpacity>
-                {accounts?.filter((a: any) => a.isActive).map((a: any) => (
+                {Array.isArray(accounts) && accounts.filter((a: any) => a.isActive).map((a: any) => (
                   <TouchableOpacity
                     key={a.id}
                     style={[styles.chip, selectedAccount === a.id && styles.chipSelected]}

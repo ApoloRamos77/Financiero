@@ -196,7 +196,6 @@ C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\static
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\staticwebassets.development.json
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\swae.build.ex.cache
-C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\FamilyFi.E058310D.Up2Date
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\FamilyFinance.API.dll
 C:\Pruebas\Desarrollo\Finanza\backend\FamilyFinance.API\obj\Debug\net10.0\refint\FamilyFinance.API.dll

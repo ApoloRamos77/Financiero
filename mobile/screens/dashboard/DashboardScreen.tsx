@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
-import { dashboardService, alertService } from '../../services/api';
+import { dashboardService, alertService, familyService, contributorService } from '../../services/api';
 import { useAuthStore, useAppStore } from '../../store';
 import {
   KpiCard, SectionHeader, MovementItem, VentureCard,
@@ -28,6 +28,16 @@ export default function DashboardScreen() {
   const { data: alerts } = useQuery({
     queryKey: ['alerts'],
     queryFn: () => alertService.getAll(),
+  });
+
+  const { data: family } = useQuery({
+    queryKey: ['family'],
+    queryFn: () => familyService.get(),
+  });
+
+  const { data: contributors } = useQuery({
+    queryKey: ['contributors'],
+    queryFn: () => contributorService.getAll(),
   });
 
   const onRefresh = useCallback(() => { refetch(); }, [refetch]);
@@ -56,6 +66,7 @@ export default function DashboardScreen() {
         <View style={styles.heroTop}>
           <View>
             <Text style={styles.heroGreeting}>Hola, {user?.name?.split(' ')[0]} 👋</Text>
+            {family?.name && <Text style={styles.heroFamily}>Familia {family.name}</Text>}
             <Text style={styles.heroPeriod}>{periodLabel}</Text>
           </View>
           {activeAlerts.length > 0 && (
@@ -210,6 +221,23 @@ export default function DashboardScreen() {
         </View>
       )}
 
+      {/* ── Aportantes (Contributors) ──────────────────────────── */}
+      {(contributors?.length ?? 0) > 0 && (
+        <View style={{ marginTop: Spacing.lg }}>
+          <SectionHeader title="Aportantes" action="Gestionar" onAction={() => navigation.navigate('More', { screen: 'Contributors' })} icon="👥" />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: Spacing.base, gap: 10 }}>
+            {contributors?.map((c: any) => (
+              <View key={c.id} style={[styles.accountChip, { borderLeftColor: Colors.income }]}>
+                <Text style={styles.accountName}>{c.name}</Text>
+                <Text style={[styles.accountBalance, { fontSize: Typography.sizes.sm, color: Colors.textSecondary }]}>
+                  {c.contributorType}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       {/* ── Alertas activas ───────────────────────────────────── */}
       {activeAlerts.length > 0 && (
         <View style={{ marginTop: Spacing.lg }}>
@@ -250,6 +278,7 @@ const styles = StyleSheet.create({
   hero: { backgroundColor: Colors.surface, paddingHorizontal: Spacing.base, paddingBottom: Spacing.xl, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, ...Shadows.md },
   heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.base },
   heroGreeting: { fontSize: Typography.sizes.xl, color: Colors.text, fontWeight: Typography.weights.bold },
+  heroFamily: { fontSize: Typography.sizes.sm, color: Colors.textSecondary, marginTop: 2, fontWeight: Typography.weights.medium },
   heroPeriod: { fontSize: Typography.sizes.sm, color: Colors.textSecondary, marginTop: 2, textTransform: 'capitalize' },
   alertBadge: { backgroundColor: Colors.expense + '20', paddingHorizontal: 10, paddingVertical: 6, borderRadius: BorderRadius.full, borderWidth: 1, borderColor: Colors.expense + '40' },
   alertBadgeText: { color: Colors.expense, fontSize: Typography.sizes.sm, fontWeight: Typography.weights.semibold },
