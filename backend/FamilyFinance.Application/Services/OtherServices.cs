@@ -182,8 +182,11 @@ public class ContributorService : IContributorService
         var result = new List<ContributorDto>();
         foreach (var c in contributors)
         {
-            var movements = await _movementRepo.GetByFamilyAsync(familyId, from, to, MovementType.Income, c.Id, ct: ct);
-            result.Add(Map(c, movements.Sum(m => m.Amount)));
+            // Filter by contributorId only (no MovementType in SQL to avoid PostgreSQL enum cast error)
+            // then filter Income in-memory
+            var movements = await _movementRepo.GetByFamilyAsync(familyId, from, to, null, c.Id, ct: ct);
+            var incomeTotal = movements.Where(m => m.Type == MovementType.Income).Sum(m => m.Amount);
+            result.Add(Map(c, incomeTotal));
         }
         return result;
     }
