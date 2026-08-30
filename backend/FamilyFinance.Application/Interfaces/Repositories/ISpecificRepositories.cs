@@ -15,6 +15,15 @@ public interface IMovementRepository : IRepository<Movement>
     Task<Dictionary<Guid, decimal>> GetTotalByCategoryAsync(Guid familyId, MovementType type, DateOnly from, DateOnly to, CancellationToken ct = default);
     Task<Dictionary<Guid, (decimal Income, decimal Expense)>> GetVentureSummaryAsync(Guid familyId, DateOnly from, DateOnly to, CancellationToken ct = default);
     Task<IEnumerable<(DateOnly Date, decimal Income, decimal Expense)>> GetDailyTrendAsync(Guid familyId, DateOnly from, DateOnly to, CancellationToken ct = default);
+
+    /// <summary>Inserta el movimiento y actualiza el balance de la cuenta en una sola transacción.</summary>
+    Task<Movement> AddWithAccountBalanceAsync(Movement movement, Guid? accountId, decimal balanceDelta, CancellationToken ct = default);
+
+    /// <summary>Actualiza el movimiento, revierte el balance antiguo y aplica el nuevo, todo en una sola transacción.</summary>
+    Task UpdateWithAccountBalanceAsync(Movement movement, Guid? oldAccountId, decimal oldBalanceDelta, Guid? newAccountId, decimal newBalanceDelta, CancellationToken ct = default);
+
+    /// <summary>Marca el movimiento como eliminado y revierte el balance de la cuenta en una sola transacción.</summary>
+    Task DeleteWithAccountBalanceAsync(Movement movement, Guid? accountId, decimal balanceDelta, CancellationToken ct = default);
 }
 
 public interface IUserRepository : IRepository<User>

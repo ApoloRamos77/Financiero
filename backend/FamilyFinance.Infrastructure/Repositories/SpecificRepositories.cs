@@ -88,6 +88,59 @@ public class MovementRepository : Repository<Movement>, IMovementRepository
                        Expense: g.FirstOrDefault(x => x.Type == MovementType.Expense)?.Total ?? 0))
                    .OrderBy(x => x.Date);
     }
+
+    // ─── Métodos atómicos: movimiento + balance de cuenta en una sola transacción ───
+
+    public async Task<Movement> AddWithAccountBalanceAsync(Movement movement, Guid? accountId, decimal balanceDelta, CancellationToken ct = default)
+    {
+        // Actualizar el balance de la cuenta directamente en BD (sin cargar la entidad)
+        if (accountId.HasValue && balanceDelta != 0)
+        {
+            await _ctx.Database.ExecuteSqlRawAsync(
+                "UPDATE ff.accounts SET balance = balance + {0}, updated_at = NOW() WHERE id = {1}",
+                balanceDelta, accountId.Value);
+        }
+
+        var entry = await _set.AddAsync(movement, ct);
+        await _ctx.SaveChangesAsync(ct);
+        return entry.Entity;
+    }
+
+    public async Task UpdateWithAccountBalanceAsync(Movement movement, Guid? oldAccountId, decimal oldBalanceDelta, Guid? newAccountId, decimal newBalanceDelta, CancellationToken ct = default)
+    {
+        // Revertir balance anterior
+        if (oldAccountId.HasValue && oldBalanceDelta != 0)
+        {
+            await _ctx.Database.ExecuteSqlRawAsync(
+                "UPDATE ff.accounts SET balance = balance + {0}, updated_at = NOW() WHERE id = {1}",
+                oldBalanceDelta, oldAccountId.Value);
+        }
+
+        // Aplicar nuevo balance
+        if (newAccountId.HasValue && newBalanceDelta != 0)
+        {
+            await _ctx.Database.ExecuteSqlRawAsync(
+                "UPDATE ff.accounts SET balance = balance + {0}, updated_at = NOW() WHERE id = {1}",
+                newBalanceDelta, newAccountId.Value);
+        }
+
+        _set.Update(movement);
+        await _ctx.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteWithAccountBalanceAsync(Movement movement, Guid? accountId, decimal balanceDelta, CancellationToken ct = default)
+    {
+        // Revertir balance
+        if (accountId.HasValue && balanceDelta != 0)
+        {
+            await _ctx.Database.ExecuteSqlRawAsync(
+                "UPDATE ff.accounts SET balance = balance + {0}, updated_at = NOW() WHERE id = {1}",
+                balanceDelta, accountId.Value);
+        }
+
+        _set.Update(movement);
+        await _ctx.SaveChangesAsync(ct);
+    }
 }
 
 public class UserRepository : Repository<User>, IUserRepository

@@ -12,15 +12,14 @@ public class MovementService : IMovementService
     private readonly IRepository<Category> _catRepo;
     private readonly IRepository<Contributor> _contribRepo;
     private readonly IRepository<Venture> _ventureRepo;
-    private readonly IRepository<Account> _accountRepo;
 
     public MovementService(IMovementRepository repo, IRepository<Category> catRepo,
-        IRepository<Contributor> contribRepo, IRepository<Venture> ventureRepo,
-        IRepository<Account> accountRepo)
+        IRepository<Contributor> contribRepo, IRepository<Venture> ventureRepo)
     {
         _repo = repo; _catRepo = catRepo; _contribRepo = contribRepo;
-        _ventureRepo = ventureRepo; _accountRepo = accountRepo;
+        _ventureRepo = ventureRepo;
     }
+
 
     public async Task<PagedResultDto<MovementDto>> GetByFamilyAsync(Guid familyId, MovementFilterDto filter, CancellationToken ct = default)
     {
@@ -45,12 +44,13 @@ public class MovementService : IMovementService
     {
         if (dto.Amount <= 0) throw new ArgumentException("El monto debe ser mayor a cero.");
 
+        var movementType = Enum.Parse<MovementType>(dto.Type, true);
         var movement = new Movement
         {
             Id = Guid.NewGuid(),
             FamilyId = familyId,
             MovementDate = dto.MovementDate,
-            Type = Enum.Parse<MovementType>(dto.Type, true),
+            Type = movementType,
             Amount = dto.Amount,
             Concept = dto.Concept,
             ContributorId = dto.ContributorId,
@@ -64,18 +64,13 @@ public class MovementService : IMovementService
             UpdatedAt = DateTime.UtcNow
         };
 
-        // Update account balance
-        if (dto.AccountId.HasValue)
-        {
-            var account = await _accountRepo.GetByIdAsync(dto.AccountId.Value, ct);
-            if (account != null)
-            {
-                account.Balance += movement.Type == MovementType.Income ? dto.Amount : -dto.Amount;
-                await _accountRepo.UpdateAsync(account, ct);
-            }
-        }
+        // Calcular delta del balance: positivo para ingresos, negativo para gastos
+        var balanceDelta = dto.AccountId.HasValue
+            ? (movementType == MovementType.Income ? dto.Amount : -dto.Amount)
+            : 0;
 
-        var created = await _repo.AddAsync(movement, ct);
+        // Operación atómica: inserta el movimiento y actualiza el balance en un solo SaveChanges
+        var created = await _repo.AddWithAccountBalanceAsync(movement, dto.AccountId, balanceDelta, ct);
         return MapToDto(created);
     }
 
@@ -84,16 +79,10 @@ public class MovementService : IMovementService
         var movement = await _repo.GetByIdAsync(id, ct)
             ?? throw new KeyNotFoundException($"Movimiento {id} no encontrado.");
 
-        // Reverse old balance effect
-        if (movement.AccountId.HasValue)
-        {
-            var account = await _accountRepo.GetByIdAsync(movement.AccountId.Value, ct);
-            if (account != null)
-            {
-                account.Balance -= movement.Type == MovementType.Income ? movement.Amount : -movement.Amount;
-                await _accountRepo.UpdateAsync(account, ct);
-            }
-        }
+        // Delta para revertir el balance anterior
+        var oldBalanceDelta = movement.AccountId.HasValue
+            ? (movement.Type == MovementType.Income ? -movement.Amount : movement.Amount)
+            : 0;
 
         movement.MovementDate = dto.MovementDate;
         movement.Amount = dto.Amount;
@@ -107,18 +96,15 @@ public class MovementService : IMovementService
         movement.UpdatedBy = userId;
         movement.UpdatedAt = DateTime.UtcNow;
 
-        // Apply new balance effect
-        if (dto.AccountId.HasValue)
-        {
-            var account = await _accountRepo.GetByIdAsync(dto.AccountId.Value, ct);
-            if (account != null)
-            {
-                account.Balance += movement.Type == MovementType.Income ? dto.Amount : -dto.Amount;
-                await _accountRepo.UpdateAsync(account, ct);
-            }
-        }
+        // Delta para aplicar el nuevo balance
+        var newBalanceDelta = dto.AccountId.HasValue
+            ? (movement.Type == MovementType.Income ? dto.Amount : -dto.Amount)
+            : 0;
 
-        await _repo.UpdateAsync(movement, ct);
+        // Operación atómica: actualiza el movimiento y ajusta ambos balances en un solo SaveChanges
+        await _repo.UpdateWithAccountBalanceAsync(movement,
+            oldAccountId: movement.AccountId, oldBalanceDelta: oldBalanceDelta,
+            newAccountId: dto.AccountId, newBalanceDelta: newBalanceDelta, ct);
         return MapToDto(movement);
     }
 
@@ -127,21 +113,18 @@ public class MovementService : IMovementService
         var movement = await _repo.GetByIdAsync(id, ct)
             ?? throw new KeyNotFoundException($"Movimiento {id} no encontrado.");
 
-        // Reverse balance
-        if (movement.AccountId.HasValue)
-        {
-            var account = await _accountRepo.GetByIdAsync(movement.AccountId.Value, ct);
-            if (account != null)
-            {
-                account.Balance -= movement.Type == MovementType.Income ? movement.Amount : -movement.Amount;
-                await _accountRepo.UpdateAsync(account, ct);
-            }
-        }
+        // Delta para revertir el balance al eliminar
+        var balanceDelta = movement.AccountId.HasValue
+            ? (movement.Type == MovementType.Income ? -movement.Amount : movement.Amount)
+            : 0;
 
         movement.IsDeleted = true;
         movement.UpdatedAt = DateTime.UtcNow;
-        await _repo.UpdateAsync(movement, ct);
+
+        // Operación atómica: marca como eliminado y revierte el balance en un solo SaveChanges
+        await _repo.DeleteWithAccountBalanceAsync(movement, movement.AccountId, balanceDelta, ct);
     }
+
 
     public async Task<CalendarMonthDto> GetCalendarAsync(Guid familyId, int year, int month, CancellationToken ct = default)
     {
