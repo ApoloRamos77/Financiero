@@ -66,7 +66,7 @@ export default function DashboardScreen() {
         <View style={styles.heroTop}>
           <View>
             <Text style={styles.heroGreeting}>Hola, {user?.name?.split(' ')[0]} 👋</Text>
-            {family?.name && <Text style={styles.heroFamily}>Familia {family.name}</Text>}
+            {family?.name && <Text style={styles.heroFamily}>{family.name}</Text>}
             <Text style={styles.heroPeriod}>{periodLabel}</Text>
           </View>
           {activeAlerts.length > 0 && (
