@@ -39,7 +39,42 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout([FromBody] string refreshToken, CancellationToken ct)
     {
         await _auth.RevokeTokenAsync(refreshToken, ct);
-        return NoContent();
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("contributors/{contributorId}/user")]
+    public async Task<IActionResult> CreateContributorUser(Guid contributorId, [FromBody] CreateContributorUserDto dto, CancellationToken ct)
+    {
+        var familyId = Guid.Parse(User.FindFirst("familyId")!.Value);
+        try { return Ok(await _auth.CreateContributorUserAsync(familyId, contributorId, dto, ct)); }
+        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("contributors/{contributorId}/reset-password")]
+    public async Task<IActionResult> ResetPassword(Guid contributorId, [FromBody] ResetPasswordDto dto, CancellationToken ct)
+    {
+        var familyId = Guid.Parse(User.FindFirst("familyId")!.Value);
+        try { 
+            await _auth.ResetPasswordAsync(familyId, contributorId, dto, ct);
+            return Ok();
+        }
+        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto, CancellationToken ct)
+    {
+        var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        try {
+            await _auth.ChangePasswordAsync(userId, dto, ct);
+            return Ok();
+        }
+        catch (UnauthorizedAccessException ex) { return Unauthorized(new { message = ex.Message }); }
     }
 }
 
@@ -224,13 +259,15 @@ public class MovementsController : ControllerBase
     {
         try { return Ok(await _svc.UpdateAsync(id, GetUserId(), dto, ct)); }
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+        catch (UnauthorizedAccessException ex) { return Unauthorized(new { message = ex.Message }); }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
-        try { await _svc.DeleteAsync(id, ct); return NoContent(); }
+        try { await _svc.DeleteAsync(id, GetUserId(), ct); return NoContent(); }
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+        catch (UnauthorizedAccessException ex) { return Unauthorized(new { message = ex.Message }); }
     }
 
     [HttpGet("calendar/{year}/{month}")]

@@ -38,12 +38,17 @@ public record UserDto(
     string Email,
     string Role,
     bool IsActive,
+    bool MustChangePassword,
     string AvatarColor,
     DateTime? LastLogin,
     string? FamilyName = null);
 
 public record CreateUserDto(string Name, string Email, string Password, string Role, string? AvatarColor);
 public record UpdateUserDto(string Name, string? Email, string? Password, string Role, bool IsActive, string? AvatarColor);
+
+public record CreateContributorUserDto(string Email, string Password);
+public record ResetPasswordDto(string NewPassword);
+public record ChangePasswordDto(string CurrentPassword, string NewPassword);
 
 // ─── Contributor ───────────────────────────────────────────
 public record ContributorDto(
@@ -118,7 +123,8 @@ public record MovementDto(
     string? AccountName,
     string PaymentMethod,
     string? Notes,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    Guid? CreatedBy);
 
 public record CreateMovementDto(
     DateOnly MovementDate,

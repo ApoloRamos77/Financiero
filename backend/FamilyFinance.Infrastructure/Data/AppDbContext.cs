@@ -53,6 +53,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.PasswordHash).HasColumnName("password_hash").HasMaxLength(500).IsRequired();
             e.Property(x => x.Role).HasColumnName("role").HasConversion<string>().HasDefaultValue(UserRole.Contributor);
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
+            e.Property(x => x.MustChangePassword).HasColumnName("must_change_password").HasDefaultValue(false);
             e.Property(x => x.AvatarColor).HasColumnName("avatar_color").HasMaxLength(7).HasDefaultValue("#6366F1");
             e.Property(x => x.LastLogin).HasColumnName("last_login");
             e.Property(x => x.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("NOW()");

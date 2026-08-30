@@ -8,6 +8,8 @@ import { movementService } from '../../services/api';
 import { ScreenHeader, Button, Badge } from '../../components/ui';
 import { formatCurrency, formatDate } from '../../utils/helpers';
 
+import { useAuthStore } from '../../store';
+
 type RouteParams = { movementId: string };
 
 export default function MovementDetailScreen() {
@@ -16,6 +18,7 @@ export default function MovementDetailScreen() {
   const route = useRoute<RouteProp<Record<string, RouteParams>>>();
   const { movementId } = route.params;
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
 
   const { data: movement, isLoading } = useQuery({
     queryKey: ['movement', movementId],
@@ -48,6 +51,8 @@ export default function MovementDetailScreen() {
 
   const isIncome = movement?.type === 'Income';
   const color = isIncome ? Colors.income : Colors.expense;
+  
+  const canModify = user?.role === 'Admin' || (movement && movement.createdBy === user?.id);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -76,14 +81,16 @@ export default function MovementDetailScreen() {
         </View>
 
         {/* Actions */}
-        <View style={styles.actions}>
-          <Button
-            title="Eliminar"
-            onPress={handleDelete}
-            variant="danger"
-            loading={deleteMutation.isPending}
-          />
-        </View>
+        {canModify && (
+          <View style={styles.actions}>
+            <Button
+              title="Eliminar"
+              onPress={handleDelete}
+              variant="danger"
+              loading={deleteMutation.isPending}
+            />
+          </View>
+        )}
       </ScrollView>
     </View>
   );

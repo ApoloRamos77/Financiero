@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius } from '../../constants/theme';
-import { contributorService } from '../../services/api';
+import { contributorService, authService } from '../../services/api';
 import { ScreenHeader, Button } from '../../components/ui';
 
 type RouteParams = { contributorId: string };
@@ -26,6 +26,13 @@ export default function ContributorDetailScreen() {
     frequency: 'Monthly',
     isActive: true,
     notes: '',
+  });
+
+  const [authForm, setAuthForm] = useState({
+    email: '',
+    password: '',
+    isCreating: false,
+    isResetting: false,
   });
 
   const { data: contributor, isLoading } = useQuery({
@@ -64,6 +71,25 @@ export default function ContributorDetailScreen() {
       queryClient.invalidateQueries({ queryKey: ['contributors'] });
       navigation.goBack();
     },
+  });
+
+  const createAccountMutation = useMutation({
+    mutationFn: () => authService.createContributorUser(contributorId, { email: authForm.email, password: authForm.password }),
+    onSuccess: () => {
+      Alert.alert('Éxito', 'Cuenta creada exitosamente');
+      setAuthForm({ ...authForm, isCreating: false, password: '' });
+      queryClient.invalidateQueries({ queryKey: ['contributor', contributorId] });
+    },
+    onError: (err: any) => Alert.alert('Error', err?.response?.data?.message || 'No se pudo crear la cuenta.'),
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: () => authService.resetPassword(contributorId, { newPassword: authForm.password }),
+    onSuccess: () => {
+      Alert.alert('Éxito', 'Contraseña restablecida exitosamente');
+      setAuthForm({ ...authForm, isResetting: false, password: '' });
+    },
+    onError: (err: any) => Alert.alert('Error', err?.response?.data?.message || 'No se pudo restablecer la contraseña.'),
   });
 
   const handleSave = () => {
@@ -220,6 +246,40 @@ export default function ContributorDetailScreen() {
           />
         </View>
 
+        {!isNew && contributor && (
+          <View style={styles.authSection}>
+            <Text style={styles.sectionTitle}>Acceso a la aplicación</Text>
+            {!contributor.userId ? (
+              <>
+                <Text style={styles.authDesc}>Crea una cuenta para que este aportante registre sus ingresos y gastos.</Text>
+                {!authForm.isCreating ? (
+                  <Button title="Crear cuenta de acceso" onPress={() => setAuthForm({ ...authForm, isCreating: true })} variant="outline" />
+                ) : (
+                  <View style={styles.authForm}>
+                    <TextInput style={[styles.input, { marginBottom: 8 }]} placeholder="Correo electrónico" placeholderTextColor={Colors.textMuted} autoCapitalize="none" keyboardType="email-address" value={authForm.email} onChangeText={v => setAuthForm({ ...authForm, email: v })} />
+                    <TextInput style={[styles.input, { marginBottom: 12 }]} placeholder="Contraseña temporal" placeholderTextColor={Colors.textMuted} secureTextEntry value={authForm.password} onChangeText={v => setAuthForm({ ...authForm, password: v })} />
+                    <Button title="Guardar Cuenta" onPress={() => createAccountMutation.mutate()} loading={createAccountMutation.isPending} />
+                    <Button title="Cancelar" onPress={() => setAuthForm({ ...authForm, isCreating: false, email: '', password: '' })} variant="text" />
+                  </View>
+                )}
+              </>
+            ) : (
+              <>
+                <Text style={styles.authDesc}>Este aportante ya tiene acceso.</Text>
+                {!authForm.isResetting ? (
+                  <Button title="Resetear contraseña" onPress={() => setAuthForm({ ...authForm, isResetting: true })} variant="outline" />
+                ) : (
+                  <View style={styles.authForm}>
+                    <TextInput style={[styles.input, { marginBottom: 12 }]} placeholder="Nueva contraseña temporal" placeholderTextColor={Colors.textMuted} secureTextEntry value={authForm.password} onChangeText={v => setAuthForm({ ...authForm, password: v })} />
+                    <Button title="Guardar Contraseña" onPress={() => resetPasswordMutation.mutate()} loading={resetPasswordMutation.isPending} />
+                    <Button title="Cancelar" onPress={() => setAuthForm({ ...authForm, isResetting: false, password: '' })} variant="text" />
+                  </View>
+                )}
+              </>
+            )}
+          </View>
+        )}
+
         <Button
           title="Guardar"
           onPress={handleSave}
@@ -252,4 +312,8 @@ const styles = StyleSheet.create({
   chipText: { color: Colors.textSecondary, fontSize: Typography.sizes.sm },
   chipTextSelected: { color: Colors.primary, fontWeight: Typography.weights.semibold },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  authSection: { marginTop: Spacing.xl, padding: Spacing.base, backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, borderWidth: 1, borderColor: Colors.border },
+  sectionTitle: { fontSize: Typography.sizes.lg, fontWeight: Typography.weights.bold, color: Colors.text, marginBottom: 8 },
+  authDesc: { fontSize: Typography.sizes.sm, color: Colors.textSecondary, marginBottom: 16 },
+  authForm: { marginTop: 8, gap: 8 },
 });

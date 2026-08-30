@@ -162,10 +162,22 @@ using (var scope = app.Services.CreateScope())
             DO $$ BEGIN ALTER TABLE ff.alert_configs ALTER COLUMN alert_type TYPE varchar(50) USING alert_type::text; EXCEPTION WHEN OTHERS THEN END; $$;
         ");
         Log.Information("Enum conversion script executed successfully.");
+
+        // Manual column addition for must_change_password if it doesn't exist
+        db.Database.ExecuteSqlRaw(@"
+            DO $$ BEGIN ALTER TABLE ff.users ADD COLUMN must_change_password boolean NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN END; $$;
+        ");
+        Log.Information("Manual column additions executed successfully.");
     }
     catch (Exception ex)
     {
         Log.Error(ex, "Database migration failed.");
+        // Try manual column addition even if migration failed
+        try {
+            db.Database.ExecuteSqlRaw(@"
+                DO $$ BEGIN ALTER TABLE ff.users ADD COLUMN must_change_password boolean NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN END; $$;
+            ");
+        } catch { }
     }
 }
 

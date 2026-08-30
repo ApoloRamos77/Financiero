@@ -12,12 +12,13 @@ public class MovementService : IMovementService
     private readonly IRepository<Category> _catRepo;
     private readonly IRepository<Contributor> _contribRepo;
     private readonly IRepository<Venture> _ventureRepo;
+    private readonly IUserRepository _userRepo;
 
     public MovementService(IMovementRepository repo, IRepository<Category> catRepo,
-        IRepository<Contributor> contribRepo, IRepository<Venture> ventureRepo)
+        IRepository<Contributor> contribRepo, IRepository<Venture> ventureRepo, IUserRepository userRepo)
     {
         _repo = repo; _catRepo = catRepo; _contribRepo = contribRepo;
-        _ventureRepo = ventureRepo;
+        _ventureRepo = ventureRepo; _userRepo = userRepo;
     }
 
 
@@ -79,6 +80,10 @@ public class MovementService : IMovementService
         var movement = await _repo.GetByIdAsync(id, ct)
             ?? throw new KeyNotFoundException($"Movimiento {id} no encontrado.");
 
+        var user = await _userRepo.GetByIdAsync(userId, ct);
+        if (user != null && user.Role == UserRole.Contributor && movement.CreatedBy != userId)
+            throw new UnauthorizedAccessException("No tienes permiso para modificar este movimiento.");
+
         // Delta para revertir el balance anterior
         var oldBalanceDelta = movement.AccountId.HasValue
             ? (movement.Type == MovementType.Income ? -movement.Amount : movement.Amount)
@@ -108,10 +113,14 @@ public class MovementService : IMovementService
         return MapToDto(movement);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task DeleteAsync(Guid id, Guid userId, CancellationToken ct = default)
     {
         var movement = await _repo.GetByIdAsync(id, ct)
             ?? throw new KeyNotFoundException($"Movimiento {id} no encontrado.");
+
+        var user = await _userRepo.GetByIdAsync(userId, ct);
+        if (user != null && user.Role == UserRole.Contributor && movement.CreatedBy != userId)
+            throw new UnauthorizedAccessException("No tienes permiso para eliminar este movimiento.");
 
         // Delta para revertir el balance al eliminar
         var balanceDelta = movement.AccountId.HasValue
@@ -176,5 +185,5 @@ public class MovementService : IMovementService
         m.CategoryId, m.Category?.Name, m.Category?.Color,
         m.VentureId, m.Venture?.Name,
         m.AccountId, m.Account?.Name,
-        m.PaymentMethod.ToString(), m.Notes, m.CreatedAt);
+        m.PaymentMethod.ToString(), m.Notes, m.CreatedAt, m.CreatedBy);
 }

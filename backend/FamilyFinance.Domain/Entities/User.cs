@@ -11,6 +11,7 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public UserRole Role { get; set; } = UserRole.Contributor;
     public bool IsActive { get; set; } = true;
+    public bool MustChangePassword { get; set; } = false;
     public string AvatarColor { get; set; } = "#6366F1";
     public DateTime? LastLogin { get; set; }
     public DateTime CreatedAt { get; set; }

@@ -12,6 +12,8 @@ import { Colors } from './constants/theme';
 import LoginScreen from './screens/auth/LoginScreen';
 import SetupScreen from './screens/auth/SetupScreen';
 import OnboardingScreen from './screens/auth/OnboardingScreen';
+import ChangePasswordScreen from './screens/auth/ChangePasswordScreen';
+import DashboardScreen from './screens/dashboard/DashboardScreen';
 import MainNavigator from './navigation/MainNavigator';
 import IncomeScreen from './screens/movements/IncomeScreen';
 import ExpenseScreen from './screens/movements/ExpenseScreen';
@@ -45,7 +47,7 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
-  const { isAuthenticated, isOnboardingComplete, isLoading, initAuth } = useAuthStore();
+  const { user, isAuthenticated, isOnboardingComplete, isLoading, initAuth } = useAuthStore();
 
   useEffect(() => {
     initAuth();
@@ -93,8 +95,11 @@ export default function App() {
               ) : !isOnboardingComplete ? (
                 // ── Estado 2: Autenticado, onboarding pendiente
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+              ) : user?.mustChangePassword ? (
+                // ── Estado 3: Contraseña por cambiar ────
+                <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
               ) : (
-                // ── Estado 3: Listo, ir a la app principal ────
+                // ── Estado 4: Listo, ir a la app principal ────
                 <>
                   <Stack.Screen name="Main" component={MainNavigator} />
                   <Stack.Screen

@@ -8,6 +8,9 @@ public interface IAuthService
     Task<AuthResponseDto> RefreshTokenAsync(string refreshToken, CancellationToken ct = default);
     Task<AuthResponseDto> SetupFamilyAsync(SetupFamilyDto dto, CancellationToken ct = default);
     Task RevokeTokenAsync(string refreshToken, CancellationToken ct = default);
+    Task<UserDto> CreateContributorUserAsync(Guid familyId, Guid contributorId, CreateContributorUserDto dto, CancellationToken ct = default);
+    Task ResetPasswordAsync(Guid familyId, Guid contributorId, ResetPasswordDto dto, CancellationToken ct = default);
+    Task ChangePasswordAsync(Guid userId, ChangePasswordDto dto, CancellationToken ct = default);
 }
 
 public interface IFamilyService
@@ -49,7 +52,7 @@ public interface IMovementService
     Task<MovementDto> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<MovementDto> CreateAsync(Guid familyId, Guid userId, CreateMovementDto dto, CancellationToken ct = default);
     Task<MovementDto> UpdateAsync(Guid id, Guid userId, UpdateMovementDto dto, CancellationToken ct = default);
-    Task DeleteAsync(Guid id, CancellationToken ct = default);
+    Task DeleteAsync(Guid id, Guid userId, CancellationToken ct = default);
     Task<CalendarMonthDto> GetCalendarAsync(Guid familyId, int year, int month, CancellationToken ct = default);
     Task<ComplianceDto> GetComplianceAsync(Guid familyId, int year, int month, CancellationToken ct = default);
 }

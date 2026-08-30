@@ -100,8 +100,8 @@ export default function VentureDetailScreen() {
 
         {/* Actions */}
         <View style={styles.actions}>
-          <Button title="Registrar ingreso" onPress={() => navigation.navigate('Income')} style={{ backgroundColor: Colors.income, marginBottom: 8 }} />
-          <Button title="Registrar gasto" onPress={() => navigation.navigate('Expense')} style={{ backgroundColor: Colors.expense, marginBottom: 8 }} />
+          <Button title="Registrar ingreso" onPress={() => navigation.navigate('Income', { preselectedVenture: ventureId })} style={{ backgroundColor: Colors.income, marginBottom: 8 }} />
+          <Button title="Registrar gasto" onPress={() => navigation.navigate('Expense', { preselectedVenture: ventureId })} style={{ backgroundColor: Colors.expense, marginBottom: 8 }} />
           <Button title="Desactivar emprendimiento" onPress={handleDeactivate} variant="danger" loading={deleteMutation.isPending} />
         </View>
       </ScrollView>

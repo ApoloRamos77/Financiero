@@ -20,6 +20,7 @@ public class AuthService : IAuthService
     private readonly IRepository<Category> _categoryRepo;
     private readonly IRepository<Account> _accountRepo;
     private readonly IRepository<AlertConfig> _alertConfigRepo;
+    private readonly IRepository<Contributor> _contributorRepo;
     private readonly IConfiguration _config;
 
     public AuthService(
@@ -29,6 +30,7 @@ public class AuthService : IAuthService
         IRepository<Category> categoryRepo,
         IRepository<Account> accountRepo,
         IRepository<AlertConfig> alertConfigRepo,
+        IRepository<Contributor> contributorRepo,
         IConfiguration config)
     {
         _userRepo = userRepo;
@@ -37,6 +39,7 @@ public class AuthService : IAuthService
         _categoryRepo = categoryRepo;
         _accountRepo = accountRepo;
         _alertConfigRepo = alertConfigRepo;
+        _contributorRepo = contributorRepo;
         _config = config;
     }
 
@@ -127,6 +130,67 @@ public class AuthService : IAuthService
         }
     }
 
+    public async Task<UserDto> CreateContributorUserAsync(Guid familyId, Guid contributorId, CreateContributorUserDto dto, CancellationToken ct = default)
+    {
+        var contributor = await _contributorRepo.GetByIdAsync(contributorId, ct)
+            ?? throw new KeyNotFoundException("Aportante no encontrado.");
+            
+        if (contributor.FamilyId != familyId) throw new UnauthorizedAccessException("Acceso denegado.");
+        if (contributor.UserId != null) throw new InvalidOperationException("Este aportante ya tiene un usuario vinculado.");
+        if (await _userRepo.ExistsAsync(u => u.Email == dto.Email.ToLower(), ct))
+            throw new InvalidOperationException("El correo ya está registrado.");
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            FamilyId = familyId,
+            Name = contributor.Name,
+            Email = dto.Email.ToLower(),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Role = UserRole.Contributor,
+            MustChangePassword = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _userRepo.AddAsync(user, ct);
+
+        contributor.UserId = user.Id;
+        await _contributorRepo.UpdateAsync(contributor, ct);
+
+        return new UserDto(user.Id, user.FamilyId, user.Name, user.Email, user.Role.ToString(), user.IsActive, user.MustChangePassword, user.AvatarColor, user.LastLogin);
+    }
+
+    public async Task ResetPasswordAsync(Guid familyId, Guid contributorId, ResetPasswordDto dto, CancellationToken ct = default)
+    {
+        var contributor = await _contributorRepo.GetByIdAsync(contributorId, ct)
+            ?? throw new KeyNotFoundException("Aportante no encontrado.");
+            
+        if (contributor.FamilyId != familyId) throw new UnauthorizedAccessException("Acceso denegado.");
+        if (contributor.UserId == null) throw new InvalidOperationException("El aportante no tiene usuario vinculado.");
+        
+        var user = await _userRepo.GetByIdAsync(contributor.UserId.Value, ct)
+            ?? throw new KeyNotFoundException("Usuario no encontrado.");
+            
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.MustChangePassword = true;
+        user.UpdatedAt = DateTime.UtcNow;
+        await _userRepo.UpdateAsync(user, ct);
+    }
+
+    public async Task ChangePasswordAsync(Guid userId, ChangePasswordDto dto, CancellationToken ct = default)
+    {
+        var user = await _userRepo.GetByIdAsync(userId, ct)
+            ?? throw new KeyNotFoundException("Usuario no encontrado.");
+            
+        if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+            throw new UnauthorizedAccessException("La contraseña actual es incorrecta.");
+            
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.MustChangePassword = false;
+        user.UpdatedAt = DateTime.UtcNow;
+        await _userRepo.UpdateAsync(user, ct);
+    }
+
     private async Task<AuthResponseDto> GenerateAuthResponseAsync(User user, CancellationToken ct)
     {
         var (accessToken, expiresAt) = GenerateAccessToken(user);
@@ -144,7 +208,7 @@ public class AuthService : IAuthService
             RefreshToken: refreshToken,
             ExpiresAt: expiresAt,
             User: new UserDto(user.Id, user.FamilyId, user.Name, user.Email,
-                              user.Role.ToString(), user.IsActive, user.AvatarColor, user.LastLogin, familyName));
+                              user.Role.ToString(), user.IsActive, user.MustChangePassword, user.AvatarColor, user.LastLogin, familyName));
     }
 
     private (string Token, DateTime ExpiresAt) GenerateAccessToken(User user)

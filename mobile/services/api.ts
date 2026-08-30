@@ -54,6 +54,12 @@ export const authService = {
     api.post('/auth/refresh', token).then(r => r.data),
   logout: (refreshToken: string) =>
     api.post('/auth/logout', refreshToken),
+  createContributorUser: (contributorId: string, data: object) =>
+    api.post(`/auth/contributors/${contributorId}/user`, data).then(r => r.data),
+  resetPassword: (contributorId: string, data: object) =>
+    api.post(`/auth/contributors/${contributorId}/reset-password`, data),
+  changePassword: (data: object) =>
+    api.post('/auth/change-password', data),
 };
 
 // ─── Family ───────────────────────────────────────────────────

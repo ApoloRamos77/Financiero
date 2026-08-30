@@ -24,6 +24,8 @@ import { todayString } from '../../utils/helpers';
 export default function ExpenseScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const preselectedVenture = route.params?.preselectedVenture || '';
   const queryClient = useQueryClient();
 
   const [amount, setAmount] = React.useState('');
@@ -32,7 +34,7 @@ export default function ExpenseScreen() {
   const [notes, setNotes] = React.useState('');
   const [selectedContributor, setSelectedContributor] = React.useState<string>('');
   const [selectedCategory, setSelectedCategory] = React.useState<string>('');
-  const [selectedVenture, setSelectedVenture] = React.useState<string>('');
+  const [selectedVenture, setSelectedVenture] = React.useState<string>(preselectedVenture);
   const [selectedAccount, setSelectedAccount] = React.useState<string>('');
   const [paymentMethod, setPaymentMethod] = React.useState('Cash');
 

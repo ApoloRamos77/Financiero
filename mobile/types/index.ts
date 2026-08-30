@@ -18,6 +18,7 @@ export interface User {
   email: string;
   role: 'Admin' | 'Contributor' | 'Viewer';
   isActive: boolean;
+  mustChangePassword?: boolean;
   avatarColor: string;
   lastLogin?: string;
   familyName?: string;

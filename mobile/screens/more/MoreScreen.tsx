@@ -267,7 +267,7 @@ export default function MoreScreen() {
         </View>
         <View>
           <Text style={styles.homeUserName}>{user?.name}</Text>
-          <Text style={styles.homeUserRole}>{user?.familyName ? `${user.familyName} · ` : ''}{user?.role === 'Admin' ? '👑 Admin' : user?.role}</Text>
+          <Text style={styles.homeUserRole}>{user?.familyName ? `${user.familyName} · ` : ''}{user?.role === 'Admin' ? '👑 Administrador' : user?.role === 'Contributor' ? 'Aportante' : 'Invitado'}</Text>
         </View>
       </View>
 

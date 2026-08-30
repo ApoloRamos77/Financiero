@@ -258,7 +258,7 @@ public class VentureService : IVentureService
         var recent = list.Take(10).Select(m => new MovementDto(m.Id, m.FamilyId, m.MovementDate,
             m.Type.ToString(), m.Amount, m.Concept, m.ContributorId, m.Contributor?.Name,
             m.CategoryId, m.Category?.Name, m.Category?.Color, m.VentureId, v.Name,
-            m.AccountId, m.Account?.Name, m.PaymentMethod.ToString(), m.Notes, m.CreatedAt));
+            m.AccountId, m.Account?.Name, m.PaymentMethod.ToString(), m.Notes, m.CreatedAt, m.CreatedBy));
         return new VentureSummaryDto(v.Id, v.Name, v.Status.ToString(), totalIncome, totalExpense,
             totalIncome - totalExpense, list.Count, recent);
     }
@@ -722,7 +722,7 @@ public class UserService : IUserService
         await _repo.UpdateAsync(u, ct);
     }
 
-    private static UserDto Map(User u) => new(u.Id, u.FamilyId, u.Name, u.Email, u.Role.ToString(), u.IsActive, u.AvatarColor, u.LastLogin);
+    private static UserDto Map(User u) => new(u.Id, u.FamilyId, u.Name, u.Email, u.Role.ToString(), u.IsActive, u.MustChangePassword, u.AvatarColor, u.LastLogin);
 }
 
 public class ReportService : IReportService

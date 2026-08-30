@@ -13,7 +13,7 @@ import { Button, ScreenHeader, DatePickerField } from '../../components/ui';
 import { PAYMENT_METHODS } from '../../constants/theme';
 import { todayString } from '../../utils/helpers';
 
-type RouteParams = { movementId?: string };
+type RouteParams = { movementId?: string; preselectedVenture?: string; };
 
 interface IncomeScreenProps {
   type: 'Income' | 'Expense';
@@ -32,7 +32,7 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
   const [notes, setNotes] = useState('');
   const [selectedContributor, setSelectedContributor] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedVenture, setSelectedVenture] = useState<string>('');
+  const [selectedVenture, setSelectedVenture] = useState<string>(route.params?.preselectedVenture || '');
   const [selectedAccount, setSelectedAccount] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState('Cash');
 
