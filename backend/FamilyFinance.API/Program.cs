@@ -106,9 +106,11 @@ app.Use(async (context, next) =>
         Log.Error(ex, "Unhandled exception");
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new { message = ex.Message, detail = ex.ToString() });
+        var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        await context.Response.WriteAsJsonAsync(new { message = msg, detail = ex.ToString() });
     }
 });
+
 
 // Habilitado en todos los entornos para que Easypanel pueda mostrar Swagger
 app.UseSwagger();
