@@ -32,3 +32,4 @@ appsettings.Development.json
 appsettings.*.json
 .env
 
+mobile/*.apk

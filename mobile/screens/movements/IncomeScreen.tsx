@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
-import { movementService, contributorService, categoryService, accountService } from '../../services/api';
+import { movementService, contributorService, categoryService, accountService, ventureService } from '../../services/api';
 import { useAppStore, flatCategories } from '../../store';
 import { Button, ScreenHeader, DatePickerField } from '../../components/ui';
 import { PAYMENT_METHODS } from '../../constants/theme';
@@ -39,7 +39,9 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
   const { data: contributors } = useQuery({ queryKey: ['contributors'], queryFn: contributorService.getAll });
   const { data: rawCategories } = useQuery({ queryKey: ['categories'], queryFn: categoryService.getAll });
   const { data: accounts } = useQuery({ queryKey: ['accounts'], queryFn: accountService.getAll });
-  const { ventures } = useAppStore();
+  const { data: rawVentures } = useQuery({ queryKey: ['ventures'], queryFn: ventureService.getAll });
+  
+  const ventures = Array.isArray(rawVentures) ? rawVentures : [];
 
   const categories = Array.isArray(rawCategories) ? flatCategories(rawCategories).filter((c: any) =>
     c.type === type || c.type === 'Both'
