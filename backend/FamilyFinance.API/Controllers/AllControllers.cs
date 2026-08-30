@@ -213,8 +213,9 @@ public class MovementsController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateMovementDto dto, CancellationToken ct)
     {
         var result = await _svc.CreateAsync(GetFamilyId(), GetUserId(), dto, ct);
-        // Generate alerts after each movement
-        await _alertSvc.GenerateAlertsAsync(GetFamilyId(), ct);
+        // Generate alerts after each movement — non-blocking: si falla no afecta el movimiento
+        try { await _alertSvc.GenerateAlertsAsync(GetFamilyId(), ct); }
+        catch { /* Las alertas son opcionales, no bloquean el registro */ }
         return Created("", result);
     }
 

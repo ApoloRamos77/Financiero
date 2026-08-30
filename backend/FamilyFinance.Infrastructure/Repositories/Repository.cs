@@ -20,10 +20,10 @@ public class Repository<T> : IRepository<T> where T : class
         => await _set.FindAsync(new object[] { id }, ct);
 
     public async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default)
-        => await _set.ToListAsync(ct);
+        => await _set.AsNoTracking().ToListAsync(ct);
 
     public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default)
-        => await _set.Where(predicate).ToListAsync(ct);
+        => await _set.AsNoTracking().Where(predicate).ToListAsync(ct);
 
     public async Task<T> AddAsync(T entity, CancellationToken ct = default)
     {
