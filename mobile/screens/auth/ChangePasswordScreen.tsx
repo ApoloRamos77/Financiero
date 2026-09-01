@@ -8,7 +8,7 @@ import { Button } from '../../components/ui';
 
 export default function ChangePasswordScreen() {
   const insets = useSafeAreaInsets();
-  const { user, initAuth } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,7 @@ export default function ChangePasswordScreen() {
     try {
       await authService.changePassword({ currentPassword: form.currentPassword, newPassword: form.newPassword });
       Alert.alert('Éxito', 'Contraseña actualizada correctamente', [
-        { text: 'OK', onPress: () => initAuth() }
+        { text: 'OK', onPress: () => updateUser({ mustChangePassword: false }) }
       ]);
     } catch (error: any) {
       Alert.alert('Error', error?.response?.data?.message || 'No se pudo cambiar la contraseña');

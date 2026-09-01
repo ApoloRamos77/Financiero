@@ -13,6 +13,7 @@ interface AuthState {
   setOnboardingComplete: () => Promise<void>;
   clearAuth: () => Promise<void>;
   initAuth: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -41,6 +42,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     await SecureStore.deleteItemAsync('user');
     await SecureStore.deleteItemAsync('onboardingComplete');
     set({ user: null, accessToken: null, isAuthenticated: false, isOnboardingComplete: false, isLoading: false });
+  },
+
+  updateUser: async (updates) => {
+    set((state) => {
+      if (!state.user) return state;
+      const updatedUser = { ...state.user, ...updates };
+      SecureStore.setItemAsync('user', JSON.stringify(updatedUser)).catch(() => {});
+      return { user: updatedUser };
+    });
   },
 
   initAuth: async () => {

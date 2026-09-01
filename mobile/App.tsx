@@ -92,7 +92,7 @@ export default function App() {
                   <Stack.Screen name="Login" component={LoginScreen} />
                   <Stack.Screen name="Setup" component={SetupScreen} />
                 </>
-              ) : !isOnboardingComplete ? (
+              ) : !isOnboardingComplete && user?.role === 'Admin' ? (
                 // ── Estado 2: Autenticado, onboarding pendiente
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
               ) : user?.mustChangePassword ? (
