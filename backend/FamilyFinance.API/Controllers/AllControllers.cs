@@ -50,6 +50,7 @@ public class AuthController : ControllerBase
         try { return Ok(await _auth.CreateContributorUserAsync(familyId, contributorId, dto, ct)); }
         catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+        catch (UnauthorizedAccessException ex) { return Unauthorized(new { message = ex.Message }); }
     }
 
     [Authorize(Roles = "Admin")]
@@ -63,6 +64,7 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
         catch (KeyNotFoundException ex) { return NotFound(new { message = ex.Message }); }
+        catch (UnauthorizedAccessException ex) { return Unauthorized(new { message = ex.Message }); }
     }
 
     [Authorize]

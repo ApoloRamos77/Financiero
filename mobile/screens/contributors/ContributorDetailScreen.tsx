@@ -258,7 +258,13 @@ export default function ContributorDetailScreen() {
                   <View style={styles.authForm}>
                     <TextInput style={[styles.input, { marginBottom: 8 }]} placeholder="Correo electrónico" placeholderTextColor={Colors.textMuted} autoCapitalize="none" keyboardType="email-address" value={authForm.email} onChangeText={v => setAuthForm({ ...authForm, email: v })} />
                     <TextInput style={[styles.input, { marginBottom: 12 }]} placeholder="Contraseña temporal" placeholderTextColor={Colors.textMuted} secureTextEntry value={authForm.password} onChangeText={v => setAuthForm({ ...authForm, password: v })} />
-                    <Button title="Guardar Cuenta" onPress={() => createAccountMutation.mutate()} loading={createAccountMutation.isPending} />
+                    <Button title="Guardar Cuenta" onPress={() => {
+                      if (!authForm.email.trim() || !authForm.password.trim()) {
+                        Alert.alert('Error', 'El correo y la contraseña son requeridos');
+                        return;
+                      }
+                      createAccountMutation.mutate();
+                    }} loading={createAccountMutation.isPending} />
                     <Button title="Cancelar" onPress={() => setAuthForm({ ...authForm, isCreating: false, email: '', password: '' })} variant="text" />
                   </View>
                 )}
@@ -271,7 +277,13 @@ export default function ContributorDetailScreen() {
                 ) : (
                   <View style={styles.authForm}>
                     <TextInput style={[styles.input, { marginBottom: 12 }]} placeholder="Nueva contraseña temporal" placeholderTextColor={Colors.textMuted} secureTextEntry value={authForm.password} onChangeText={v => setAuthForm({ ...authForm, password: v })} />
-                    <Button title="Guardar Contraseña" onPress={() => resetPasswordMutation.mutate()} loading={resetPasswordMutation.isPending} />
+                    <Button title="Guardar Contraseña" onPress={() => {
+                      if (!authForm.password.trim()) {
+                        Alert.alert('Error', 'La contraseña es requerida');
+                        return;
+                      }
+                      resetPasswordMutation.mutate();
+                    }} loading={resetPasswordMutation.isPending} />
                     <Button title="Cancelar" onPress={() => setAuthForm({ ...authForm, isResetting: false, password: '' })} variant="text" />
                   </View>
                 )}
