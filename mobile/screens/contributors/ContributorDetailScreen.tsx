@@ -80,7 +80,10 @@ export default function ContributorDetailScreen() {
       setAuthForm({ ...authForm, isCreating: false, password: '' });
       queryClient.invalidateQueries({ queryKey: ['contributor', contributorId] });
     },
-    onError: (err: any) => Alert.alert('Error', err?.response?.data?.message || 'No se pudo crear la cuenta.'),
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message || (err?.response?.data ? JSON.stringify(err.response.data) : err.message);
+      Alert.alert('Error', msg || 'No se pudo crear la cuenta.');
+    },
   });
 
   const resetPasswordMutation = useMutation({
