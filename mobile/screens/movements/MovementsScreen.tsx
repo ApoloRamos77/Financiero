@@ -30,7 +30,7 @@ export default function MovementsScreen() {
   const { data: contributors } = useQuery({ queryKey: ['contributors'], queryFn: contributorService.getAll });
 
   const { data, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ['movements', typeFilter, page],
+    queryKey: ['movements', typeFilter, page, fromDate, toDate, contributor],
     queryFn: () => movementService.getAll({
       type: typeFilter || undefined,
       from: fromDate || undefined,

@@ -35,7 +35,7 @@ export default function MoreScreen() {
   const { data: contributors = [] } = useQuery({ queryKey: ['contributors'], queryFn: contributorService.getAll, enabled: section === 'contributors' });
   const { data: accounts = [] } = useQuery({ queryKey: ['accounts'], queryFn: accountService.getAll, enabled: section === 'accounts' });
   const { data: monthlyReport } = useQuery({ queryKey: ['report-monthly', selectedYear, selectedMonth], queryFn: () => reportService.getMonthly(selectedYear, selectedMonth), enabled: section === 'reports' });
-  const { data: insights } = useQuery({ queryKey: ['insights'], queryFn: () => reportService.getMonthly(selectedYear, selectedMonth), enabled: section === 'analysis' });
+  const { data: insights } = useQuery({ queryKey: ['insights'], queryFn: () => analysisService.getInsights(), enabled: section === 'analysis' });
 
   const createGoalMutation = useMutation({
     mutationFn: (data: object) => goalService.create(data),
@@ -128,9 +128,11 @@ export default function MoreScreen() {
             <>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>👥 Aportantes</Text>
-                <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('ContributorDetail', { contributorId: 'new' })}>
-                  <Text style={styles.addBtnText}>+ Nuevo</Text>
-                </TouchableOpacity>
+                {user?.role === 'Admin' && (
+                  <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('ContributorDetail', { contributorId: 'new' })}>
+                    <Text style={styles.addBtnText}>+ Nuevo</Text>
+                  </TouchableOpacity>
+                )}
               </View>
               {(contributors as any[]).length === 0 ? (
                 <EmptyState icon="👤" title="Sin aportantes" subtitle="Registra los miembros que generan ingresos" />
@@ -206,6 +208,32 @@ export default function MoreScreen() {
                   <Text style={styles.catAmount}>S/ {c.amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
                 </View>
               ))}
+            </>
+          )}
+
+          {/* ─ Analysis ─ */}
+          {section === 'analysis' && insights && (
+            <>
+              <Text style={styles.sectionTitle2}>🔍 Insights Financieros</Text>
+              {(insights.insights || []).map((insight: any, index: number) => (
+                <View key={index} style={[styles.profileCard, { borderLeftWidth: 4, borderLeftColor: (Colors as any)[insight.type] || Colors.primary }]}>
+                   <View style={{ flex: 1 }}>
+                     <Text style={[styles.listItemName, { color: (Colors as any)[insight.type] || Colors.primary }]}>{insight.title}</Text>
+                     <Text style={styles.listItemSub}>{insight.description}</Text>
+                   </View>
+                </View>
+              ))}
+              {insights.recommendations?.length > 0 && (
+                <>
+                  <Text style={styles.subSectionTitle}>Recomendaciones</Text>
+                  {insights.recommendations.map((rec: string, i: number) => (
+                    <View key={i} style={styles.categoryRow}>
+                      <Text style={{ marginRight: 8 }}>💡</Text>
+                      <Text style={styles.catName}>{rec}</Text>
+                    </View>
+                  ))}
+                </>
+              )}
             </>
           )}
 

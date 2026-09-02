@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius } from '../../constants/theme';
 import { contributorService, authService } from '../../services/api';
 import { ScreenHeader, Button } from '../../components/ui';
+import { useAuthStore } from '../../store';
 
 type RouteParams = { contributorId: string };
 
@@ -16,6 +17,8 @@ export default function ContributorDetailScreen() {
   const { contributorId } = route.params;
   const isNew = contributorId === 'new';
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
+  const isReadOnly = user?.role !== 'Admin';
 
   const [form, setForm] = useState({
     name: '',
@@ -143,7 +146,7 @@ export default function ContributorDetailScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <ScreenHeader title={isNew ? 'Nuevo Aportante' : 'Editar Aportante'} onBack={() => navigation.goBack()} />
+      <ScreenHeader title={isNew ? 'Nuevo Aportante' : isReadOnly ? 'Aportante' : 'Editar Aportante'} onBack={() => navigation.goBack()} />
 
       <ScrollView contentContainerStyle={{ padding: Spacing.base, paddingBottom: insets.bottom + 40 }}>
         <View style={styles.field}>
@@ -154,6 +157,7 @@ export default function ContributorDetailScreen() {
             onChangeText={v => setForm({ ...form, name: v })}
             placeholder="Ej: Juan Pérez"
             placeholderTextColor={Colors.textMuted}
+            editable={!isReadOnly}
           />
         </View>
 
@@ -165,6 +169,7 @@ export default function ContributorDetailScreen() {
                 key={t.value}
                 style={[styles.chip, form.contributorType === t.value && styles.chipSelected]}
                 onPress={() => setForm({ ...form, contributorType: t.value })}
+                disabled={isReadOnly}
               >
                 <Text style={[styles.chipText, form.contributorType === t.value && styles.chipTextSelected]}>
                   {t.label}
@@ -183,6 +188,7 @@ export default function ContributorDetailScreen() {
             placeholder="0.00"
             placeholderTextColor={Colors.textMuted}
             keyboardType="decimal-pad"
+            editable={!isReadOnly}
           />
         </View>
 
@@ -194,6 +200,7 @@ export default function ContributorDetailScreen() {
                 key={f.value}
                 style={[styles.chip, form.frequency === f.value && styles.chipSelected]}
                 onPress={() => setForm({ ...form, frequency: f.value })}
+                disabled={isReadOnly}
               >
                 <Text style={[styles.chipText, form.frequency === f.value && styles.chipTextSelected]}>
                   {f.label}
@@ -213,6 +220,7 @@ export default function ContributorDetailScreen() {
             placeholderTextColor={Colors.textMuted}
             keyboardType="number-pad"
             maxLength={2}
+            editable={!isReadOnly}
           />
         </View>
 
@@ -224,6 +232,7 @@ export default function ContributorDetailScreen() {
             onChangeText={v => setForm({ ...form, incomeSource: v })}
             placeholder="Ej: Empresa S.A."
             placeholderTextColor={Colors.textMuted}
+            editable={!isReadOnly}
           />
         </View>
 
@@ -237,10 +246,11 @@ export default function ContributorDetailScreen() {
             placeholderTextColor={Colors.textMuted}
             multiline
             numberOfLines={3}
+            editable={!isReadOnly}
           />
         </View>
 
-        <View style={[styles.field, styles.switchRow]}>
+        <View style={[styles.field, styles.switchRow]} pointerEvents={isReadOnly ? "none" : "auto"}>
           <Text style={styles.label}>Estado Activo</Text>
           <Switch
             value={form.isActive}
@@ -249,7 +259,7 @@ export default function ContributorDetailScreen() {
           />
         </View>
 
-        {!isNew && contributor && (
+        {!isNew && contributor && !isReadOnly && (
           <View style={styles.authSection}>
             <Text style={styles.sectionTitle}>Acceso a la aplicación</Text>
             {!contributor.userId ? (
@@ -295,13 +305,15 @@ export default function ContributorDetailScreen() {
           </View>
         )}
 
-        <Button
-          title="Guardar"
-          onPress={handleSave}
-          loading={saveMutation.isPending}
-          style={{ marginTop: Spacing.xl, marginBottom: Spacing.base }}
-        />
-        {!isNew && (
+        {!isReadOnly && (
+          <Button
+            title="Guardar"
+            onPress={handleSave}
+            loading={saveMutation.isPending}
+            style={{ marginTop: Spacing.xl, marginBottom: Spacing.base }}
+          />
+        )}
+        {!isNew && !isReadOnly && (
           <Button
             title="Eliminar"
             onPress={handleDelete}
