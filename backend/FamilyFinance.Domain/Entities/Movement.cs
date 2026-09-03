@@ -10,10 +10,10 @@ public class Movement
     public MovementType Type { get; set; }
     public decimal Amount { get; set; }
     public string Concept { get; set; } = string.Empty;
-    public Guid? ContributorId { get; set; }
-    public Guid? CategoryId { get; set; }
+    public Guid ContributorId { get; set; }
+    public Guid CategoryId { get; set; }
     public Guid? VentureId { get; set; }
-    public Guid? AccountId { get; set; }
+    public Guid AccountId { get; set; }
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;
     public string? Notes { get; set; }
     public bool IsDeleted { get; set; } = false;

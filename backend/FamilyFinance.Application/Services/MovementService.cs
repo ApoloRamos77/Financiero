@@ -58,7 +58,7 @@ public class MovementService : IMovementService
             CategoryId = dto.CategoryId,
             VentureId = dto.VentureId,
             AccountId = dto.AccountId,
-            PaymentMethod = dto.PaymentMethod != null ? Enum.Parse<PaymentMethod>(dto.PaymentMethod, true) : PaymentMethod.Cash,
+            PaymentMethod = Enum.Parse<PaymentMethod>(dto.PaymentMethod, true),
             Notes = dto.Notes,
             CreatedBy = userId,
             CreatedAt = DateTime.UtcNow,
@@ -66,9 +66,7 @@ public class MovementService : IMovementService
         };
 
         // Calcular delta del balance: positivo para ingresos, negativo para gastos
-        var balanceDelta = dto.AccountId.HasValue
-            ? (movementType == MovementType.Income ? dto.Amount : -dto.Amount)
-            : 0;
+        var balanceDelta = movementType == MovementType.Income ? dto.Amount : -dto.Amount;
 
         // Operación atómica: inserta el movimiento y actualiza el balance en un solo SaveChanges
         var created = await _repo.AddWithAccountBalanceAsync(movement, dto.AccountId, balanceDelta, ct);
@@ -85,9 +83,7 @@ public class MovementService : IMovementService
             throw new UnauthorizedAccessException("No tienes permiso para modificar este movimiento.");
 
         // Delta para revertir el balance anterior
-        var oldBalanceDelta = movement.AccountId.HasValue
-            ? (movement.Type == MovementType.Income ? -movement.Amount : movement.Amount)
-            : 0;
+        var oldBalanceDelta = movement.Type == MovementType.Income ? -movement.Amount : movement.Amount;
 
         movement.MovementDate = dto.MovementDate;
         movement.Amount = dto.Amount;
@@ -96,15 +92,13 @@ public class MovementService : IMovementService
         movement.CategoryId = dto.CategoryId;
         movement.VentureId = dto.VentureId;
         movement.AccountId = dto.AccountId;
-        movement.PaymentMethod = dto.PaymentMethod != null ? Enum.Parse<PaymentMethod>(dto.PaymentMethod, true) : PaymentMethod.Cash;
+        movement.PaymentMethod = Enum.Parse<PaymentMethod>(dto.PaymentMethod, true);
         movement.Notes = dto.Notes;
         movement.UpdatedBy = userId;
         movement.UpdatedAt = DateTime.UtcNow;
 
         // Delta para aplicar el nuevo balance
-        var newBalanceDelta = dto.AccountId.HasValue
-            ? (movement.Type == MovementType.Income ? dto.Amount : -dto.Amount)
-            : 0;
+        var newBalanceDelta = movement.Type == MovementType.Income ? dto.Amount : -dto.Amount;
 
         // Operación atómica: actualiza el movimiento y ajusta ambos balances en un solo SaveChanges
         await _repo.UpdateWithAccountBalanceAsync(movement,
@@ -123,9 +117,7 @@ public class MovementService : IMovementService
             throw new UnauthorizedAccessException("No tienes permiso para eliminar este movimiento.");
 
         // Delta para revertir el balance al eliminar
-        var balanceDelta = movement.AccountId.HasValue
-            ? (movement.Type == MovementType.Income ? -movement.Amount : movement.Amount)
-            : 0;
+        var balanceDelta = movement.Type == MovementType.Income ? -movement.Amount : movement.Amount;
 
         movement.IsDeleted = true;
         movement.UpdatedAt = DateTime.UtcNow;

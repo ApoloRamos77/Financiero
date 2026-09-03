@@ -131,22 +131,22 @@ public record CreateMovementDto(
     string Type,
     decimal Amount,
     string Concept,
-    Guid? ContributorId,
-    Guid? CategoryId,
+    Guid ContributorId,
+    Guid CategoryId,
     Guid? VentureId,
-    Guid? AccountId,
-    string? PaymentMethod,
+    Guid AccountId,
+    string PaymentMethod,
     string? Notes);
 
 public record UpdateMovementDto(
     DateOnly MovementDate,
     decimal Amount,
     string Concept,
-    Guid? ContributorId,
-    Guid? CategoryId,
+    Guid ContributorId,
+    Guid CategoryId,
     Guid? VentureId,
-    Guid? AccountId,
-    string? PaymentMethod,
+    Guid AccountId,
+    string PaymentMethod,
     string? Notes);
 
 public record MovementFilterDto(

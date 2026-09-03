@@ -78,12 +78,22 @@ export default function ExpenseScreen() {
     if (!concept.trim()) {
       Alert.alert('Error', 'Ingresa una descripción del gasto.'); return;
     }
+    if (!selectedContributor) {
+      Alert.alert('Error', 'Selecciona un responsable.'); return;
+    }
+    if (!selectedCategory) {
+      Alert.alert('Error', 'Selecciona una categoría.'); return;
+    }
+    if (!selectedAccount) {
+      Alert.alert('Error', 'Selecciona una cuenta.'); return;
+    }
+
     createMutation.mutate({
       movementDate: date, type, amount: parsedAmount, concept: concept.trim(),
-      contributorId: selectedContributor || undefined,
-      categoryId: selectedCategory || undefined,
+      contributorId: selectedContributor,
+      categoryId: selectedCategory,
       ventureId: selectedVenture || undefined,
-      accountId: selectedAccount || undefined,
+      accountId: selectedAccount,
       paymentMethod, notes: notes.trim() || undefined,
     });
   };
@@ -125,9 +135,6 @@ export default function ExpenseScreen() {
             <View style={styles.field}>
               <Text style={styles.label}>Responsable</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-                <TouchableOpacity style={[styles.chip, !selectedContributor && styles.chipSelected]} onPress={() => setSelectedContributor('')}>
-                  <Text style={[styles.chipText, !selectedContributor && styles.chipTextSelected]}>Ninguno</Text>
-                </TouchableOpacity>
                 {Array.isArray(contributors) && contributors.map((c: any) => (
                   <TouchableOpacity key={c.id} style={[styles.chip, selectedContributor === c.id && styles.chipSelected]} onPress={() => setSelectedContributor(c.id)} activeOpacity={0.7}>
                     <Text style={[styles.chipText, selectedContributor === c.id && styles.chipTextSelected]}>{c.name}</Text>
@@ -170,9 +177,6 @@ export default function ExpenseScreen() {
             <View style={styles.field}>
               <Text style={styles.label}>Cuenta</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-                <TouchableOpacity style={[styles.chip, !selectedAccount && styles.chipSelected]} onPress={() => setSelectedAccount('')}>
-                  <Text style={[styles.chipText, !selectedAccount && styles.chipTextSelected]}>Sin cuenta</Text>
-                </TouchableOpacity>
                 {Array.isArray(accounts) && accounts.filter((a: any) => a.isActive).map((a: any) => (
                   <TouchableOpacity key={a.id} style={[styles.chip, selectedAccount === a.id && styles.chipSelected]} onPress={() => setSelectedAccount(a.id)} activeOpacity={0.7}>
                     <Text style={[styles.chipText, selectedAccount === a.id && styles.chipTextSelected]}>{a.name}</Text>

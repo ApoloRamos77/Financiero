@@ -80,15 +80,28 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
       return;
     }
 
+    if (!selectedContributor) {
+      Alert.alert('Error', 'Selecciona un responsable.');
+      return;
+    }
+    if (!selectedCategory) {
+      Alert.alert('Error', 'Selecciona una categoría.');
+      return;
+    }
+    if (!selectedAccount) {
+      Alert.alert('Error', 'Selecciona una cuenta.');
+      return;
+    }
+
     createMutation.mutate({
       movementDate: date,
       type,
       amount: parsedAmount,
       concept: concept.trim(),
-      contributorId: selectedContributor || undefined,
-      categoryId: selectedCategory || undefined,
+      contributorId: selectedContributor,
+      categoryId: selectedCategory,
       ventureId: selectedVenture || undefined,
-      accountId: selectedAccount || undefined,
+      accountId: selectedAccount,
       paymentMethod,
       notes: notes.trim() || undefined,
     });
@@ -149,12 +162,6 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
             <View style={styles.field}>
               <Text style={styles.label}>Responsable</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-                <TouchableOpacity
-                  style={[styles.chip, !selectedContributor && styles.chipSelected]}
-                  onPress={() => setSelectedContributor('')}
-                >
-                  <Text style={[styles.chipText, !selectedContributor && styles.chipTextSelected]}>Ninguno</Text>
-                </TouchableOpacity>
                 {Array.isArray(contributors) && contributors.map((c: any) => (
                   <TouchableOpacity
                     key={c.id}
@@ -224,12 +231,6 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
             <View style={styles.field}>
               <Text style={styles.label}>Cuenta</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-                <TouchableOpacity
-                  style={[styles.chip, !selectedAccount && styles.chipSelected]}
-                  onPress={() => setSelectedAccount('')}
-                >
-                  <Text style={[styles.chipText, !selectedAccount && styles.chipTextSelected]}>Sin cuenta</Text>
-                </TouchableOpacity>
                 {Array.isArray(accounts) && accounts.filter((a: any) => a.isActive).map((a: any) => (
                   <TouchableOpacity
                     key={a.id}

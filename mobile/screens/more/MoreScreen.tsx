@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
 import {
   authService, reportService, goalService, contributorService,
-  alertService, categoryService, accountService, ventureService, userService
+  alertService, categoryService, accountService, ventureService, userService, analysisService
 } from '../../services/api';
 import { useAuthStore, useAppStore } from '../../store';
 import { GoalCard, AlertItem, EmptyState, Button } from '../../components/ui';

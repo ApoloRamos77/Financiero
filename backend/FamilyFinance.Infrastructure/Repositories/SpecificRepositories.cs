@@ -53,8 +53,8 @@ public class MovementRepository : Repository<Movement>, IMovementRepository
     public async Task<Dictionary<Guid, decimal>> GetTotalByCategoryAsync(Guid familyId, MovementType type, DateOnly from, DateOnly to, CancellationToken ct = default)
         => await _ctx.Movements
             .Where(m => m.FamilyId == familyId && !m.IsDeleted && m.Type == type
-                     && m.MovementDate >= from && m.MovementDate <= to && m.CategoryId != null)
-            .GroupBy(m => m.CategoryId!.Value)
+                     && m.MovementDate >= from && m.MovementDate <= to)
+            .GroupBy(m => m.CategoryId)
             .ToDictionaryAsync(g => g.Key, g => g.Sum(m => m.Amount), ct);
 
     public async Task<Dictionary<Guid, (decimal Income, decimal Expense)>> GetVentureSummaryAsync(Guid familyId, DateOnly from, DateOnly to, CancellationToken ct = default)
