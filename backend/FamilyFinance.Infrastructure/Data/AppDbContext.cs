@@ -51,7 +51,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(150).IsRequired();
             e.Property(x => x.Email).HasColumnName("email").HasMaxLength(255).IsRequired();
             e.Property(x => x.PasswordHash).HasColumnName("password_hash").HasMaxLength(500).IsRequired();
-            e.Property(x => x.Role).HasColumnName("role").HasConversion<string>().HasDefaultValue(UserRole.Contributor);
+            e.Property(x => x.Role).HasColumnName("role").HasConversion<string>();
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
             e.Property(x => x.MustChangePassword).HasColumnName("must_change_password").HasDefaultValue(false);
             e.Property(x => x.AvatarColor).HasColumnName("avatar_color").HasMaxLength(7).HasDefaultValue("#6366F1");
@@ -86,9 +86,9 @@ public class AppDbContext : DbContext
             e.Property(x => x.FamilyId).HasColumnName("family_id");
             e.Property(x => x.UserId).HasColumnName("user_id");
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(150).IsRequired();
-            e.Property(x => x.ContributorType).HasColumnName("contributor_type").HasConversion<string>().HasDefaultValue(ContributorType.Salary);
+            e.Property(x => x.ContributorType).HasColumnName("contributor_type").HasConversion<string>();
             e.Property(x => x.FixedIncome).HasColumnName("fixed_income").HasColumnType("decimal(15,2)").HasDefaultValue(0);
-            e.Property(x => x.Frequency).HasColumnName("frequency").HasConversion<string>().HasDefaultValue(FrequencyType.Monthly);
+            e.Property(x => x.Frequency).HasColumnName("frequency").HasConversion<string>();
             e.Property(x => x.PaymentDay).HasColumnName("payment_day");
             e.Property(x => x.IncomeSource).HasColumnName("income_source").HasMaxLength(255);
             e.Property(x => x.IsActive).HasColumnName("is_active").HasDefaultValue(true);
@@ -109,7 +109,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(150).IsRequired();
             e.Property(x => x.Description).HasColumnName("description");
             e.Property(x => x.ResponsibleId).HasColumnName("responsible_id");
-            e.Property(x => x.Status).HasColumnName("status").HasConversion<string>().HasDefaultValue(VentureStatus.Active);
+            e.Property(x => x.Status).HasColumnName("status").HasConversion<string>();
             e.Property(x => x.StartDate).HasColumnName("start_date");
             e.Property(x => x.Icon).HasColumnName("icon").HasMaxLength(50).HasDefaultValue("briefcase");
             e.Property(x => x.Color).HasColumnName("color").HasMaxLength(7).HasDefaultValue("#F59E0B");
@@ -130,7 +130,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("uuid_generate_v4()");
             e.Property(x => x.FamilyId).HasColumnName("family_id");
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
-            e.Property(x => x.Type).HasColumnName("type").HasConversion<string>().HasDefaultValue(CategoryType.Expense);
+            e.Property(x => x.Type).HasColumnName("type").HasConversion<string>();
             e.Property(x => x.ParentId).HasColumnName("parent_id");
             e.Property(x => x.Icon).HasColumnName("icon").HasMaxLength(50).HasDefaultValue("tag");
             e.Property(x => x.Color).HasColumnName("color").HasMaxLength(7).HasDefaultValue("#6366F1");
@@ -151,7 +151,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("uuid_generate_v4()");
             e.Property(x => x.FamilyId).HasColumnName("family_id");
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
-            e.Property(x => x.AccountType).HasColumnName("account_type").HasConversion<string>().HasDefaultValue(AccountType.Cash);
+            e.Property(x => x.AccountType).HasColumnName("account_type").HasConversion<string>();
             e.Property(x => x.Balance).HasColumnName("balance").HasColumnType("decimal(15,2)").HasDefaultValue(0);
             e.Property(x => x.Color).HasColumnName("color").HasMaxLength(7).HasDefaultValue("#6366F1");
             e.Property(x => x.Icon).HasColumnName("icon").HasMaxLength(50).HasDefaultValue("wallet");
@@ -178,7 +178,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.CategoryId).HasColumnName("category_id");
             e.Property(x => x.VentureId).HasColumnName("venture_id");
             e.Property(x => x.AccountId).HasColumnName("account_id");
-            e.Property(x => x.PaymentMethod).HasColumnName("payment_method").HasConversion<string>().HasDefaultValue(PaymentMethod.Cash);
+            e.Property(x => x.PaymentMethod).HasColumnName("payment_method").HasConversion<string>();
             e.Property(x => x.Notes).HasColumnName("notes");
             e.Property(x => x.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
             e.Property(x => x.CreatedBy).HasColumnName("created_by");
@@ -200,7 +200,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.Id).HasColumnName("id").HasDefaultValueSql("uuid_generate_v4()");
             e.Property(x => x.FamilyId).HasColumnName("family_id");
             e.Property(x => x.Name).HasColumnName("name").HasMaxLength(150).IsRequired();
-            e.Property(x => x.GoalType).HasColumnName("goal_type").HasConversion<string>().HasDefaultValue(GoalType.Other);
+            e.Property(x => x.GoalType).HasColumnName("goal_type").HasConversion<string>();
             e.Property(x => x.TargetAmount).HasColumnName("target_amount").HasColumnType("decimal(15,2)");
             e.Property(x => x.CurrentAmount).HasColumnName("current_amount").HasColumnType("decimal(15,2)").HasDefaultValue(0);
             e.Property(x => x.TargetDate).HasColumnName("target_date");
@@ -228,7 +228,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.AlertType).HasColumnName("alert_type").HasConversion<string>();
             e.Property(x => x.Title).HasColumnName("title").HasMaxLength(200).IsRequired();
             e.Property(x => x.Message).HasColumnName("message").IsRequired();
-            e.Property(x => x.Status).HasColumnName("status").HasConversion<string>().HasDefaultValue(AlertStatus.Active);
+            e.Property(x => x.Status).HasColumnName("status").HasConversion<string>();
             e.Property(x => x.VentureId).HasColumnName("venture_id");
             e.Property(x => x.AlertDate).HasColumnName("alert_date").HasDefaultValueSql("CURRENT_DATE");
             e.Property(x => x.ReadAt).HasColumnName("read_at");
