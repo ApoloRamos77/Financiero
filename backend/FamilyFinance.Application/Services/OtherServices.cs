@@ -242,10 +242,22 @@ public class VentureService : IVentureService
     public VentureService(IRepository<Venture> repo, IMovementRepository movementRepo)
     { _repo = repo; _movementRepo = movementRepo; }
 
-    public async Task<IEnumerable<VentureDto>> GetByFamilyAsync(Guid familyId, CancellationToken ct = default)
+    public async Task<IEnumerable<VentureDto>> GetByFamilyAsync(Guid familyId, int? year = null, int? month = null, CancellationToken ct = default)
     {
         var ventures = await _repo.FindAsync(v => v.FamilyId == familyId, ct);
-        return ventures.Select(v => Map(v));
+        var now = DateTime.Today;
+        var y = year ?? now.Year;
+        var m = month ?? now.Month;
+        var from = new DateOnly(y, m, 1);
+        var to = from.AddMonths(1).AddDays(-1);
+
+        var ventureSummary = await _movementRepo.GetVentureSummaryAsync(familyId, from, to, ct);
+
+        return ventures.Select(v => {
+            var inc = ventureSummary.TryGetValue(v.Id, out var sum) ? sum.Income : 0m;
+            var exp = ventureSummary.TryGetValue(v.Id, out var sum2) ? sum2.Expense : 0m;
+            return Map(v, inc, exp);
+        });
     }
 
     public async Task<VentureSummaryDto> GetSummaryAsync(Guid id, CancellationToken ct = default)
@@ -293,8 +305,8 @@ public class VentureService : IVentureService
         await _repo.UpdateAsync(v, ct);
     }
 
-    private static VentureDto Map(Venture v) => new(v.Id, v.FamilyId, v.Name, v.Description,
-        v.ResponsibleId, v.Responsible?.Name, v.Status.ToString(), v.StartDate, v.Icon, v.Color);
+    private static VentureDto Map(Venture v, decimal income = 0, decimal expense = 0) => new(v.Id, v.FamilyId, v.Name, v.Description,
+        v.ResponsibleId, v.Responsible?.Name, v.Status.ToString(), v.StartDate, v.Icon, v.Color, income, expense, income - expense);
 }
 
 public class CategoryService : ICategoryService

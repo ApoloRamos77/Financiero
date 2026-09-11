@@ -179,9 +179,9 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
           )}
 
           {/* Category */}
-          {categories.length > 0 && (
-            <View style={styles.field}>
-              <Text style={styles.label}>Categoría</Text>
+          <View style={styles.field}>
+            <Text style={styles.label}>Categoría</Text>
+            {categories.length > 0 ? (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
                 {categories.map((c: any) => (
                   <TouchableOpacity
@@ -196,8 +196,12 @@ function MovementFormScreen({ type }: IncomeScreenProps) {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-            </View>
-          )}
+            ) : (
+              <Text style={{ color: Colors.textMuted, fontSize: Typography.sizes.sm, fontStyle: 'italic', marginTop: 4 }}>
+                No hay categorías configuradas para este tipo de movimiento.
+              </Text>
+            )}
+          </View>
 
           {/* Venture */}
           {ventures.length > 0 && (

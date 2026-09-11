@@ -34,8 +34,8 @@ export default function MoreScreen() {
   const { data: alerts = [] } = useQuery({ queryKey: ['alerts'], queryFn: alertService.getAll, enabled: section === 'alerts' });
   const { data: contributors = [] } = useQuery({ queryKey: ['contributors'], queryFn: contributorService.getAll, enabled: section === 'contributors' });
   const { data: accounts = [] } = useQuery({ queryKey: ['accounts'], queryFn: accountService.getAll, enabled: section === 'accounts' });
-  const { data: monthlyReport } = useQuery({ queryKey: ['report-monthly', selectedYear, selectedMonth], queryFn: () => reportService.getMonthly(selectedYear, selectedMonth), enabled: section === 'reports' });
-  const { data: insights } = useQuery({ queryKey: ['insights'], queryFn: () => analysisService.getInsights(), enabled: section === 'analysis' });
+  const { data: monthlyReport, isLoading: isLoadingReport, isError: isReportError } = useQuery({ queryKey: ['report-monthly', selectedYear, selectedMonth], queryFn: () => reportService.getMonthly(selectedYear, selectedMonth), enabled: section === 'reports' });
+  const { data: insights, isLoading: isLoadingInsights, isError: isInsightsError } = useQuery({ queryKey: ['insights'], queryFn: () => analysisService.getInsights(), enabled: section === 'analysis' });
 
   const createGoalMutation = useMutation({
     mutationFn: (data: object) => goalService.create(data),
@@ -176,64 +176,80 @@ export default function MoreScreen() {
           )}
 
           {/* ─ Reports ─ */}
-          {section === 'reports' && monthlyReport && (
+          {section === 'reports' && (
             <>
-              <Text style={styles.sectionTitle2}>📊 {formatMonthYear(selectedYear, selectedMonth)}</Text>
-              <View style={styles.reportGrid}>
-                <View style={[styles.reportCard, { borderTopColor: Colors.income }]}>
-                  <Text style={styles.reportCardLabel}>Ingresos</Text>
-                  <Text style={[styles.reportCardValue, { color: Colors.income }]}>S/ {monthlyReport.totalIncome.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
-                </View>
-                <View style={[styles.reportCard, { borderTopColor: Colors.expense }]}>
-                  <Text style={styles.reportCardLabel}>Gastos</Text>
-                  <Text style={[styles.reportCardValue, { color: Colors.expense }]}>S/ {monthlyReport.totalExpense.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
-                </View>
-                <View style={[styles.reportCard, { borderTopColor: Colors.primary }]}>
-                  <Text style={styles.reportCardLabel}>Resultado</Text>
-                  <Text style={[styles.reportCardValue, { color: monthlyReport.netResult >= 0 ? Colors.income : Colors.expense }]}>
-                    S/ {monthlyReport.netResult.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-                  </Text>
-                </View>
-                <View style={[styles.reportCard, { borderTopColor: Colors.savings }]}>
-                  <Text style={styles.reportCardLabel}>Ahorro</Text>
-                  <Text style={[styles.reportCardValue, { color: Colors.savings }]}>S/ {monthlyReport.savings.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
-                </View>
-              </View>
-              <Text style={styles.subSectionTitle}>Top gastos por categoría</Text>
-              {monthlyReport.expenseByCategory.slice(0, 5).map((c: any) => (
-                <View key={c.categoryName} style={styles.categoryRow}>
-                  <View style={[styles.catDot, { backgroundColor: c.color }]} />
-                  <Text style={styles.catName}>{c.categoryName}</Text>
-                  <Text style={styles.catPct}>{c.percentage.toFixed(1)}%</Text>
-                  <Text style={styles.catAmount}>S/ {c.amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
-                </View>
-              ))}
+              {isLoadingReport ? (
+                <View style={{ padding: 40, alignItems: 'center' }}><Text style={{ color: Colors.textSecondary }}>Cargando reporte...</Text></View>
+              ) : isReportError ? (
+                <EmptyState icon="❌" title="Error" subtitle="No se pudo cargar el reporte mensual." />
+              ) : monthlyReport ? (
+                <>
+                  <Text style={styles.sectionTitle2}>📊 {formatMonthYear(selectedYear, selectedMonth)}</Text>
+                  <View style={styles.reportGrid}>
+                    <View style={[styles.reportCard, { borderTopColor: Colors.income }]}>
+                      <Text style={styles.reportCardLabel}>Ingresos</Text>
+                      <Text style={[styles.reportCardValue, { color: Colors.income }]}>S/ {monthlyReport.totalIncome.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
+                    </View>
+                    <View style={[styles.reportCard, { borderTopColor: Colors.expense }]}>
+                      <Text style={styles.reportCardLabel}>Gastos</Text>
+                      <Text style={[styles.reportCardValue, { color: Colors.expense }]}>S/ {monthlyReport.totalExpense.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
+                    </View>
+                    <View style={[styles.reportCard, { borderTopColor: Colors.primary }]}>
+                      <Text style={styles.reportCardLabel}>Resultado</Text>
+                      <Text style={[styles.reportCardValue, { color: monthlyReport.netResult >= 0 ? Colors.income : Colors.expense }]}>
+                        S/ {monthlyReport.netResult.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                      </Text>
+                    </View>
+                    <View style={[styles.reportCard, { borderTopColor: Colors.savings }]}>
+                      <Text style={styles.reportCardLabel}>Ahorro</Text>
+                      <Text style={[styles.reportCardValue, { color: Colors.savings }]}>S/ {monthlyReport.savings.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.subSectionTitle}>Top gastos por categoría</Text>
+                  {monthlyReport.expenseByCategory.slice(0, 5).map((c: any) => (
+                    <View key={c.categoryName} style={styles.categoryRow}>
+                      <View style={[styles.catDot, { backgroundColor: c.color }]} />
+                      <Text style={styles.catName}>{c.categoryName}</Text>
+                      <Text style={styles.catPct}>{c.percentage.toFixed(1)}%</Text>
+                      <Text style={styles.catAmount}>S/ {c.amount.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</Text>
+                    </View>
+                  ))}
+                </>
+              ) : null}
             </>
           )}
 
           {/* ─ Analysis ─ */}
-          {section === 'analysis' && insights && (
+          {section === 'analysis' && (
             <>
-              <Text style={styles.sectionTitle2}>🔍 Insights Financieros</Text>
-              {(insights.insights || []).map((insight: any, index: number) => (
-                <View key={index} style={[styles.profileCard, { borderLeftWidth: 4, borderLeftColor: (Colors as any)[insight.type] || Colors.primary }]}>
-                   <View style={{ flex: 1 }}>
-                     <Text style={[styles.listItemName, { color: (Colors as any)[insight.type] || Colors.primary }]}>{insight.title}</Text>
-                     <Text style={styles.listItemSub}>{insight.description}</Text>
-                   </View>
-                </View>
-              ))}
-              {insights.recommendations?.length > 0 && (
+              {isLoadingInsights ? (
+                <View style={{ padding: 40, alignItems: 'center' }}><Text style={{ color: Colors.textSecondary }}>Analizando finanzas...</Text></View>
+              ) : isInsightsError ? (
+                <EmptyState icon="❌" title="Error" subtitle="No se pudo cargar el análisis." />
+              ) : insights ? (
                 <>
-                  <Text style={styles.subSectionTitle}>Recomendaciones</Text>
-                  {insights.recommendations.map((rec: string, i: number) => (
-                    <View key={i} style={styles.categoryRow}>
-                      <Text style={{ marginRight: 8 }}>💡</Text>
-                      <Text style={styles.catName}>{rec}</Text>
+                  <Text style={styles.sectionTitle2}>🔍 Insights Financieros</Text>
+                  {(insights.insights || []).map((insight: any, index: number) => (
+                    <View key={index} style={[styles.profileCard, { borderLeftWidth: 4, borderLeftColor: (Colors as any)[insight.type] || Colors.primary }]}>
+                       <View style={{ flex: 1 }}>
+                         <Text style={[styles.listItemName, { color: (Colors as any)[insight.type] || Colors.primary }]}>{insight.title}</Text>
+                         <Text style={styles.listItemSub}>{insight.message}</Text>
+                       </View>
                     </View>
                   ))}
+                  {insights.recommendations?.length > 0 && (
+                    <>
+                      <Text style={styles.subSectionTitle}>Recomendaciones</Text>
+                      {insights.recommendations.map((rec: string, i: number) => (
+                        <View key={i} style={styles.categoryRow}>
+                          <Text style={{ marginRight: 8 }}>💡</Text>
+                          <Text style={styles.catName}>{rec}</Text>
+                        </View>
+                      ))}
+                    </>
+                  )}
                 </>
-              )}
+              ) : null}
             </>
           )}
 

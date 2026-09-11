@@ -28,7 +28,11 @@ export const formatMonthYear = (year: number, month: number): string => {
 };
 
 export const todayString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 export const getDaysInMonth = (year: number, month: number): number => {

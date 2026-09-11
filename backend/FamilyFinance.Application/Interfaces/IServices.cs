@@ -39,7 +39,7 @@ public interface IContributorService
 
 public interface IVentureService
 {
-    Task<IEnumerable<VentureDto>> GetByFamilyAsync(Guid familyId, CancellationToken ct = default);
+    Task<IEnumerable<VentureDto>> GetByFamilyAsync(Guid familyId, int? year = null, int? month = null, CancellationToken ct = default);
     Task<VentureSummaryDto> GetSummaryAsync(Guid id, CancellationToken ct = default);
     Task<VentureDto> CreateAsync(Guid familyId, CreateVentureDto dto, CancellationToken ct = default);
     Task<VentureDto> UpdateAsync(Guid id, UpdateVentureDto dto, CancellationToken ct = default);

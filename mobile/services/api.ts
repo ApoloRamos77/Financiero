@@ -105,7 +105,7 @@ export const contributorService = {
 
 // ─── Ventures ─────────────────────────────────────────────────
 export const ventureService = {
-  getAll: () => api.get('/ventures').then(r => r.data),
+  getAll: (year?: number, month?: number) => api.get('/ventures', { params: { year, month } }).then(r => r.data),
   getSummary: (id: string) => api.get(`/ventures/${id}/summary`).then(r => r.data),
   create: (data: object) => api.post('/ventures', data).then(r => r.data),
   update: (id: string, data: object) => api.put(`/ventures/${id}`, data).then(r => r.data),

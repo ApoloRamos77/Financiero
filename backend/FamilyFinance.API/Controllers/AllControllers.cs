@@ -194,8 +194,8 @@ public class VenturesController : ControllerBase
     public VenturesController(IVentureService svc) => _svc = svc;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken ct)
-        => Ok(await _svc.GetByFamilyAsync(GetFamilyId(), ct));
+    public async Task<IActionResult> GetAll([FromQuery] int? year, [FromQuery] int? month, CancellationToken ct)
+        => Ok(await _svc.GetByFamilyAsync(GetFamilyId(), year, month, ct));
 
     [HttpGet("{id}/summary")]
     public async Task<IActionResult> GetSummary(Guid id, CancellationToken ct)

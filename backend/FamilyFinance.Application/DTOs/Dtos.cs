@@ -84,7 +84,10 @@ public record VentureDto(
     string Status,
     DateOnly? StartDate,
     string Icon,
-    string Color);
+    string Color,
+    decimal Income = 0,
+    decimal Expense = 0,
+    decimal Profit = 0);
 
 public record VentureSummaryDto(
     Guid Id,

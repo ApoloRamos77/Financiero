@@ -8,18 +8,24 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../../constants/theme';
 import { ventureService } from '../../services/api';
 import { VentureCard, EmptyState, Button } from '../../components/ui';
-import { formatCurrency } from '../../utils/helpers';
+
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 export default function VenturesScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const queryClient = useQueryClient();
+  const today = new Date();
+  
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', icon: '🏪', color: '#F59E0B' });
 
   const { data: ventures = [], isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ['ventures'],
-    queryFn: ventureService.getAll,
+    queryKey: ['ventures', year, month],
+    queryFn: () => ventureService.getAll(year, month),
   });
 
   const createMutation = useMutation({
@@ -37,8 +43,22 @@ export default function VenturesScreen() {
     createMutation.mutate({ name: form.name, description: form.description, icon: form.icon, color: form.color });
   };
 
-  const activeVentures = ventures.filter((v: any) => v.status === 'Active');
-  const inactiveVentures = ventures.filter((v: any) => v.status !== 'Active');
+  const prevMonth = () => {
+    if (month === 1) { setYear(y => y - 1); setMonth(12); }
+    else setMonth(m => m - 1);
+  };
+
+  const nextMonth = () => {
+    if (month === 12) { setYear(y => y + 1); setMonth(1); }
+    else setMonth(m => m + 1);
+  };
+
+  const filteredVentures = ventures.filter((v: any) => 
+    v.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const activeVentures = filteredVentures.filter((v: any) => v.status === 'Active');
+  const inactiveVentures = filteredVentures.filter((v: any) => v.status !== 'Active');
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -49,6 +69,22 @@ export default function VenturesScreen() {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.monthNav}>
+        <TouchableOpacity onPress={prevMonth} style={styles.navBtn}><Text style={styles.navBtnText}>‹</Text></TouchableOpacity>
+        <Text style={styles.monthLabel}>{MONTHS[month - 1]} {year}</Text>
+        <TouchableOpacity onPress={nextMonth} style={styles.navBtn}><Text style={styles.navBtnText}>›</Text></TouchableOpacity>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar emprendimiento..."
+          placeholderTextColor={Colors.textMuted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={Colors.primary} />}
@@ -56,13 +92,13 @@ export default function VenturesScreen() {
       >
         {isLoading ? (
           <View style={styles.loading}><Text style={styles.loadingText}>Cargando...</Text></View>
-        ) : ventures.length === 0 ? (
+        ) : filteredVentures.length === 0 ? (
           <EmptyState
             icon="🏪"
-            title="Sin emprendimientos"
-            subtitle="Registra tus negocios y emprendimientos para rastrear su rentabilidad"
-            action="Crear emprendimiento"
-            onAction={() => setShowModal(true)}
+            title="Sin resultados"
+            subtitle="No se encontraron emprendimientos con esos criterios."
+            action={ventures.length === 0 ? "Crear emprendimiento" : undefined}
+            onAction={ventures.length === 0 ? () => setShowModal(true) : undefined}
           />
         ) : (
           <>
@@ -75,9 +111,9 @@ export default function VenturesScreen() {
                   <VentureCard
                     key={v.id}
                     name={v.name}
-                    income={0}
-                    expense={0}
-                    profit={0}
+                    income={v.income ?? 0}
+                    expense={v.expense ?? 0}
+                    profit={v.profit ?? 0}
                     icon={v.icon}
                     color={v.color}
                     onPress={() => navigation.navigate('VentureDetail', { ventureId: v.id })}
@@ -95,9 +131,9 @@ export default function VenturesScreen() {
                   <VentureCard
                     key={v.id}
                     name={v.name}
-                    income={0}
-                    expense={0}
-                    profit={0}
+                    income={v.income ?? 0}
+                    expense={v.expense ?? 0}
+                    profit={v.profit ?? 0}
                     icon={v.icon}
                     color={Colors.textMuted}
                     onPress={() => navigation.navigate('VentureDetail', { ventureId: v.id })}
@@ -164,6 +200,12 @@ const styles = StyleSheet.create({
   title: { fontSize: Typography.sizes['2xl'], color: Colors.text, fontWeight: Typography.weights.bold },
   addBtn: { backgroundColor: Colors.venture, paddingHorizontal: Spacing.base, paddingVertical: 8, borderRadius: BorderRadius.full },
   addBtnText: { color: Colors.white, fontSize: Typography.sizes.sm, fontWeight: Typography.weights.semibold },
+  monthNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: Spacing.base, marginBottom: Spacing.sm, backgroundColor: Colors.surface, borderRadius: BorderRadius.full, paddingHorizontal: 4, paddingVertical: 4 },
+  navBtn: { paddingHorizontal: 16, paddingVertical: 8 },
+  navBtnText: { fontSize: 24, color: Colors.primary, lineHeight: 24, marginTop: -2 },
+  monthLabel: { fontSize: Typography.sizes.base, color: Colors.text, fontWeight: Typography.weights.bold, textTransform: 'capitalize' },
+  searchContainer: { paddingHorizontal: Spacing.base, marginBottom: Spacing.sm },
+  searchInput: { backgroundColor: Colors.surface, borderRadius: BorderRadius.lg, paddingHorizontal: Spacing.base, paddingVertical: 10, fontSize: Typography.sizes.sm, color: Colors.text, borderWidth: 1, borderColor: Colors.border },
   loading: { padding: Spacing.xl, alignItems: 'center' },
   loadingText: { color: Colors.textSecondary },
   sectionHeader: { paddingHorizontal: Spacing.base, paddingVertical: Spacing.sm },
