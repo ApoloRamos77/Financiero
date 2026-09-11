@@ -48,7 +48,7 @@ public class MovementRepository : Repository<Movement>, IMovementRepository
         => await _ctx.Movements
             .Where(m => m.FamilyId == familyId && !m.IsDeleted && m.Type == type
                      && m.MovementDate >= from && m.MovementDate <= to)
-            .SumAsync(m => m.Amount, ct);
+            .SumAsync(m => (decimal?)m.Amount, ct) ?? 0;
 
     public async Task<Dictionary<Guid, decimal>> GetTotalByCategoryAsync(Guid familyId, MovementType type, DateOnly from, DateOnly to, CancellationToken ct = default)
         => await _ctx.Movements
